@@ -1,7 +1,49 @@
 'use client';
 import { useState } from 'react';
 
-export default function CommunicationHub({ patient }: { patient: string }) {
+// Define TypeScript interfaces
+interface Notification {
+  id: number;
+  type: string;
+  title: string;
+  message: string;
+  timestamp: string;
+  department: string;
+  priority: string;
+  acknowledged: boolean;
+}
+
+interface Message {
+  id: number;
+  from: string;
+  to: string;
+  subject: string;
+  message: string;
+  timestamp: string;
+  priority: string;
+  read: boolean;
+}
+
+interface HandoffNote {
+  id: number;
+  patient: string;
+  from: string;
+  to: string;
+  handoffTime: string;
+  summary: string;
+  outstandingOrders: string[];
+  criticalInfo: string;
+  contactInfo: string;
+}
+
+interface Patient {
+  name: string;
+  age: number;
+  gender: string;
+  id: string;
+}
+
+export default function CommunicationHub({ patient }: { patient?: Patient }) {
   const [activeTab, setActiveTab] = useState('notifications');
   const [newMessage, setNewMessage] = useState({
     recipient: '',
@@ -10,12 +52,14 @@ export default function CommunicationHub({ patient }: { patient: string }) {
     priority: 'Normal',
     department: ''
   });
-  const [notifications, setNotifications] = useState([]);
-  const [messages, setMessages] = useState([]);
-  const [handoffNotes, setHandoffNotes] = useState([]);
+  
+  // Properly typed state arrays
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [handoffNotes, setHandoffNotes] = useState<HandoffNote[]>([]);
 
   // Mock data for demonstration
-  const recentNotifications = [
+  const recentNotifications: Notification[] = [
     {
       id: 1,
       type: 'critical_value',
@@ -58,7 +102,7 @@ export default function CommunicationHub({ patient }: { patient: string }) {
     }
   ];
 
-  const recentMessages = [
+  const recentMessages: Message[] = [
     {
       id: 1,
       from: 'Dr. Peter Kamau',
@@ -91,7 +135,7 @@ export default function CommunicationHub({ patient }: { patient: string }) {
     }
   ];
 
-  const activeHandoffs = [
+  const activeHandoffs: HandoffNote[] = [
     {
       id: 1,
       patient: 'John Mwangi',
@@ -135,7 +179,7 @@ export default function CommunicationHub({ patient }: { patient: string }) {
       return;
     }
 
-    const message = {
+    const message: Message = {
       id: Date.now(),
       from: 'Dr. Sarah Johnson',
       to: newMessage.recipient,
@@ -158,7 +202,7 @@ export default function CommunicationHub({ patient }: { patient: string }) {
     alert('Message sent successfully!');
   };
 
-  const acknowledgeNotification = (id) => {
+  const acknowledgeNotification = (id: number) => {
     setNotifications(prev => 
       prev.map(notif => 
         notif.id === id ? { ...notif, acknowledged: true } : notif
@@ -166,7 +210,7 @@ export default function CommunicationHub({ patient }: { patient: string }) {
     );
   };
 
-  const getPriorityColor = (priority) => {
+  const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'Emergency': return 'text-red-600 bg-red-50 border-red-200';
       case 'Urgent': return 'text-orange-600 bg-orange-50 border-orange-200';
@@ -175,7 +219,7 @@ export default function CommunicationHub({ patient }: { patient: string }) {
     }
   };
 
-  const getNotificationIcon = (type) => {
+  const getNotificationIcon = (type: string) => {
     switch (type) {
       case 'critical_value': return 'ri-alarm-warning-line text-red-500';
       case 'prescription': return 'ri-medicine-bottle-line text-green-500';
@@ -496,9 +540,9 @@ export default function CommunicationHub({ patient }: { patient: string }) {
                     value={newMessage.message}
                     onChange={(e) => setNewMessage(prev => ({ ...prev, message: e.target.value }))}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                    rows="6"
+                    rows={6}
                     placeholder="Type your message here..."
-                    maxLength="1000"
+                    maxLength={1000}
                     required
                   ></textarea>
                   <p className="text-xs text-gray-500 mt-1">{newMessage.message.length}/1000 characters</p>
