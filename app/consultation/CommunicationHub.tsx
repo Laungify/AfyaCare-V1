@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 
-export default function CommunicationHub({ patient }) {
+export default function CommunicationHub({ patient }: { patient: string }) {
   const [activeTab, setActiveTab] = useState('notifications');
   const [newMessage, setNewMessage] = useState({
     recipient: '',
