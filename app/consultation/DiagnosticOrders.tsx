@@ -1,11 +1,38 @@
 'use client';
 import { useState } from 'react';
 
-export default function DiagnosticOrders({ patient, onComplete }) {
+export default function DiagnosticOrders({ patient }: {
+  patient: { id: string; name: string; age: number; gender: string; }
+}) {
   const [selectedCategory, setSelectedCategory] = useState('laboratory');
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState<Array<OrderType & {
+    id: string;
+    patientId: string;
+    patientName: string;
+    orderDate: string;
+    status: string;
+    totalCost: number;
+  }>>([]);
   const [showOrderModal, setShowOrderModal] = useState(false);
-  const [currentOrder, setCurrentOrder] = useState({
+  type TestType = {
+    id: string;
+    name: string;
+    cost?: number;
+    category?: string;
+    [key: string]: any;
+  };
+
+  type OrderType = {
+    category: string;
+    tests: TestType[];
+    urgency: string;
+    clinicalIndication: string;
+    department: string;
+    requestingDoctor: string;
+    specialInstructions: string;
+  };
+
+  const [currentOrder, setCurrentOrder] = useState<OrderType>({
     category: '',
     tests: [],
     urgency: 'Normal',
@@ -182,7 +209,7 @@ export default function DiagnosticOrders({ patient, onComplete }) {
     { value: 'Normal', label: 'Routine', color: 'text-green-600 bg-green-50', time: 'Within 24 hours' }
   ];
 
-  const handleTestSelect = (test, category) => {
+  const handleTestSelect = (test: TestType, category: string) => {
     const testData = {
       ...test,
       category: category,
@@ -196,7 +223,7 @@ export default function DiagnosticOrders({ patient, onComplete }) {
     }));
   };
 
-  const handleRemoveTest = (testId) => {
+  const handleRemoveTest = (testId: string) => {
     setCurrentOrder(prev => ({
       ...prev,
       tests: prev.tests.filter(t => t.id !== testId)
@@ -238,7 +265,7 @@ export default function DiagnosticOrders({ patient, onComplete }) {
     alert('Diagnostic order submitted successfully!');
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'Pending': return 'text-orange-600 bg-orange-50';
       case 'In Progress': return 'text-blue-600 bg-blue-50';
@@ -586,9 +613,9 @@ export default function DiagnosticOrders({ patient, onComplete }) {
                     value={currentOrder.specialInstructions}
                     onChange={(e) => setCurrentOrder(prev => ({ ...prev, specialInstructions: e.target.value }))}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                    rows="2"
+                    rows={2}
                     placeholder="Any special instructions for the laboratory, imaging, or surgical team"
-                    maxLength="300"
+                    maxLength={300}
                   ></textarea>
                 </div>
               </div>

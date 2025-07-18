@@ -9,10 +9,10 @@ import QueueStatus from './QueueStatus';
 
 export default function RegistrationPage() {
   const [currentStep, setCurrentStep] = useState('search');
-  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [selectedPatient, setSelectedPatient] = useState<{ id: string; name: string; age: number } | null>(null);
   const [registrationComplete, setRegistrationComplete] = useState(false);
 
-  const handlePatientFound = (patient) => {
+  const handlePatientFound = (patient: { id: string; name: string; age: number } | null ) => {
     setSelectedPatient(patient);
     setCurrentStep('update');
   };
@@ -22,7 +22,7 @@ export default function RegistrationPage() {
     setCurrentStep('register');
   };
 
-  const handleRegistrationComplete = (patientData) => {
+  const handleRegistrationComplete = (patientData: { id: string; name: string; age: number }) => {
     setSelectedPatient(patientData);
     setRegistrationComplete(true);
     setCurrentStep('queue');

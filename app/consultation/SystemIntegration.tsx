@@ -1,11 +1,38 @@
 'use client';
 import { useState, useEffect } from 'react';
 
-export default function SystemIntegration({ patient }) {
-  const [integrationStatus, setIntegrationStatus] = useState({});
-  const [syncProgress, setSyncProgress] = useState({});
-  const [externalData, setExternalData] = useState({});
-  const [connectionHealth, setConnectionHealth] = useState({});
+export default function SystemIntegration({ patient }: {
+  patient: { id: string; name: string; age: number } | null;
+}) {
+  type SyncProgressType = {
+    [key: string]: {
+      status: string;
+      progress: number;
+      lastSync: string;
+    }
+  };
+
+  type ConnectionHealthType = {
+    [key: string]: {
+      responseTime: number;
+      uptime: number;
+      lastHealthCheck: string;
+      status: string;
+    }
+  };
+
+  type IntegrationStatusType = {
+    [key: string]: any;
+  };
+
+  type ExternalDataType = {
+    [key: string]: any;
+  };
+
+  const [integrationStatus, setIntegrationStatus] = useState<IntegrationStatusType>({});
+  const [syncProgress, setSyncProgress] = useState<SyncProgressType>({});
+  const [externalData, setExternalData] = useState<ExternalDataType>({});
+  const [connectionHealth, setConnectionHealth] = useState<ConnectionHealthType>({});
 
   // Mock integration systems
   const integrationSystems = [
@@ -158,8 +185,8 @@ export default function SystemIntegration({ patient }) {
 
   const syncExternalData = () => {
     if (!patient) return;
-    
-    const progress = {};
+
+    const progress: SyncProgressType = {};
     integrationSystems.forEach(system => {
       progress[system.id] = {
         status: 'syncing',
@@ -171,7 +198,7 @@ export default function SystemIntegration({ patient }) {
 
     // Complete sync after a delay
     setTimeout(() => {
-      const completedProgress = {};
+      const completedProgress: SyncProgressType = {};
       integrationSystems.forEach(system => {
         completedProgress[system.id] = {
           status: 'completed',
@@ -183,7 +210,7 @@ export default function SystemIntegration({ patient }) {
     }, 3000);
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'connected': return 'text-green-600 bg-green-50';
       case 'disconnected': return 'text-red-600 bg-red-50';
@@ -193,7 +220,7 @@ export default function SystemIntegration({ patient }) {
     }
   };
 
-  const getHealthColor = (status) => {
+  const getHealthColor = (status: string) => {
     switch (status) {
       case 'healthy': return 'text-green-600';
       case 'warning': return 'text-yellow-600';
@@ -202,7 +229,7 @@ export default function SystemIntegration({ patient }) {
     }
   };
 
-  const forceSync = (systemId) => {
+  const forceSync = (systemId: string) => {
     setSyncProgress(prev => ({
       ...prev,
       [systemId]: { status: 'syncing', progress: 0, lastSync: new Date().toISOString() }
@@ -228,7 +255,7 @@ export default function SystemIntegration({ patient }) {
     }, 500);
   };
 
-  const testConnection = (systemId) => {
+  const testConnection = (systemId: string) => {
     alert(`Testing connection to ${integrationSystems.find(s => s.id === systemId)?.name}...\\n\\nConnection test: SUCCESSFUL\\nResponse time: ${Math.floor(Math.random() * 100) + 50}ms\\nAPI Status: OK`);
   };
 
@@ -237,7 +264,7 @@ export default function SystemIntegration({ patient }) {
       {/* Header */}
       <div className="bg-white rounded-lg p-6 shadow-sm">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">System Integration Dashboard</h2>
-        
+
         {patient && (
           <div className="bg-gray-50 rounded-lg p-4">
             <div className="flex items-center justify-between">
@@ -276,7 +303,7 @@ export default function SystemIntegration({ patient }) {
                 <span className="text-gray-600">Data Flow:</span>
                 <span className="font-medium capitalize">{system.dataFlow}</span>
               </div>
-              
+
               <div className="flex justify-between items-center text-sm">
                 <span className="text-gray-600">Last Sync:</span>
                 <span className="font-medium">{new Date(system.lastSync).toLocaleTimeString()}</span>
@@ -304,7 +331,7 @@ export default function SystemIntegration({ patient }) {
                     <span className="font-medium">{syncProgress[system.id].progress}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
+                    <div
                       className="bg-blue-500 h-2 rounded-full transition-all duration-500"
                       style={{ width: `${syncProgress[system.id].progress}%` }}
                     ></div>
@@ -335,7 +362,7 @@ export default function SystemIntegration({ patient }) {
       {patient && (
         <div className="space-y-6">
           <h3 className="text-lg font-semibold text-gray-900">Integrated Patient Data</h3>
-          
+
           <div className="grid md:grid-cols-2 gap-6">
             <div className="bg-white rounded-lg p-6 shadow-sm border">
               <div className="flex items-center space-x-3 mb-4">
@@ -457,7 +484,7 @@ export default function SystemIntegration({ patient }) {
       {/* API Health Dashboard */}
       <div className="bg-white rounded-lg p-6 shadow-sm">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">API Health Dashboard</h3>
-        
+
         <div className="grid md:grid-cols-4 gap-6">
           <div className="text-center">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -466,7 +493,7 @@ export default function SystemIntegration({ patient }) {
             <h4 className="font-semibold text-gray-900">9/9</h4>
             <p className="text-sm text-gray-600">Systems Connected</p>
           </div>
-          
+
           <div className="text-center">
             <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
               <i className="ri-refresh-line text-blue-600 text-2xl"></i>
@@ -474,7 +501,7 @@ export default function SystemIntegration({ patient }) {
             <h4 className="font-semibold text-gray-900">99.8%</h4>
             <p className="text-sm text-gray-600">Average Uptime</p>
           </div>
-          
+
           <div className="text-center">
             <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
               <i className="ri-speed-line text-purple-600 text-2xl"></i>
@@ -482,7 +509,7 @@ export default function SystemIntegration({ patient }) {
             <h4 className="font-semibold text-gray-900">125ms</h4>
             <p className="text-sm text-gray-600">Avg Response Time</p>
           </div>
-          
+
           <div className="text-center">
             <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
               <i className="ri-exchange-line text-orange-600 text-2xl"></i>

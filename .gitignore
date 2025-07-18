@@ -4,3 +4,6 @@ build/
 coverage/
 .DS_Store
 .env
+# Next.js
+.next/
+.next

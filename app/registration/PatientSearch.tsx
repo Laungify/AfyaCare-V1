@@ -2,9 +2,25 @@
 'use client';
 import { useState } from 'react';
 
-export default function PatientSearch({ onPatientFound, onNewPatient }) {
+type Patient = {
+  id: string;
+  name: string;
+  nationalId: string;
+  phone: string;
+  age: number;
+  gender: string;
+  lastVisit: string;
+  photo: string;
+};
+
+interface PatientSearchProps {
+  onPatientFound: (patient: Patient) => void;
+  onNewPatient: () => void;
+}
+
+export default function PatientSearch({ onPatientFound, onNewPatient }: PatientSearchProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState<Patient[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchPerformed, setSearchPerformed] = useState(false);
 

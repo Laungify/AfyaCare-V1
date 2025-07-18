@@ -1,7 +1,10 @@
 'use client';
 import { useState } from 'react';
 
-export default function PatientStatusManager({ patient, onStatusChange }) {
+export default function PatientStatusManager({ patient, onStatusChange }: {
+  patient: { id: string; name: string; age: number; gender: string; chiefComplaint: string; status?: string };
+  onStatusChange: (status: any) => void;
+}) {
   const [statusDecision, setStatusDecision] = useState({
     disposition: '',
     admissionType: '',
@@ -21,7 +24,8 @@ export default function PatientStatusManager({ patient, onStatusChange }) {
     transportArrangements: ''
   });
 
-  const [availableBeds, setAvailableBeds] = useState([]);
+  type Bed = { ward: string; bedNumber: string; type: string; available: boolean; cost: number };
+  const [availableBeds, setAvailableBeds] = useState<Bed[]>([]);
   const [appointmentSlots, setAppointmentSlots] = useState([]);
   const [showDischargeModal, setShowDischargeModal] = useState(false);
   const [showAdmissionModal, setShowAdmissionModal] = useState(false);
@@ -54,7 +58,7 @@ export default function PatientStatusManager({ patient, onStatusChange }) {
     { date: '2024-01-22', time: '15:30', doctor: 'Dr. Sarah Johnson', available: true }
   ];
 
-  const handleDispositionChange = (disposition) => {
+  const handleDispositionChange = (disposition: string) => {
     setStatusDecision(prev => ({ ...prev, disposition }));
     
     if (disposition === 'admit') {
@@ -478,9 +482,9 @@ export default function PatientStatusManager({ patient, onStatusChange }) {
                     value={statusDecision.dischargeInstructions}
                     onChange={(e) => setStatusDecision(prev => ({ ...prev, dischargeInstructions: e.target.value }))}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                    rows="4"
+                    rows={4}
                     placeholder="Provide detailed discharge instructions including medication compliance, activity restrictions, warning signs to watch for..."
-                    maxLength="1000"
+                    maxLength={1000}
                     required
                   ></textarea>
                 </div>
@@ -494,9 +498,9 @@ export default function PatientStatusManager({ patient, onStatusChange }) {
                       value={statusDecision.restrictions}
                       onChange={(e) => setStatusDecision(prev => ({ ...prev, restrictions: e.target.value }))}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                      rows="3"
+                      rows={3}
                       placeholder="Physical activity limitations, work restrictions, driving restrictions..."
-                      maxLength="500"
+                      maxLength={500}
                     ></textarea>
                   </div>
 
@@ -508,9 +512,9 @@ export default function PatientStatusManager({ patient, onStatusChange }) {
                       value={statusDecision.emergencyContacts}
                       onChange={(e) => setStatusDecision(prev => ({ ...prev, emergencyContacts: e.target.value }))}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                      rows="3"
+                      rows={3}
                       placeholder="When to seek immediate medical attention, emergency contact numbers..."
-                      maxLength="500"
+                      maxLength={500}
                     ></textarea>
                   </div>
                 </div>
