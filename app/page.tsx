@@ -15,7 +15,7 @@ export default function Home() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-900">AfyaCare</h1>
-                <p className="text-sm text-gray-600">Clinical Module</p>
+                <p className="text-sm text-gray-600">Doctor Consultation</p>
               </div>
             </div>
             <nav className="flex items-center space-x-6">
@@ -25,9 +25,16 @@ export default function Home() {
               <Link href="/triage" className="text-gray-700 hover:text-blue-600 transition-colors">
                 Triage
               </Link>
-              <Link href="/dashboard" className="text-gray-700 hover:text-blue-600 transition-colors">
-                Dashboard
+              <Link href="/consultation" className="text-blue-600 font-medium">
+                Consultation
               </Link>
+              <Link href="/diagnostics" className="text-gray-700 hover:text-blue-600 transition-colors">
+                Diagnostics
+              </Link>
+              <div className="flex items-center space-x-2 text-sm text-gray-600">
+                <i className="ri-user-line"></i>
+                <span>Dr. Sarah Johnson</span>
+              </div>
             </nav>
           </div>
         </div>
@@ -35,7 +42,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <div className="relative">
-        <div 
+        <div
           className="h-96 bg-cover bg-center"
           style={{
             backgroundImage: `linear-gradient(rgba(37, 99, 235, 0.8), rgba(16, 185, 129, 0.8)), url('https://readdy.ai/api/search-image?query=Modern%20hospital%20reception%20area%20with%20friendly%20medical%20staff%20welcoming%20patients%2C%20clean%20white%20and%20blue%20interior%20design%2C%20natural%20lighting%20through%20large%20windows%2C%20professional%20healthcare%20environment%20with%20comfortable%20seating%20and%20digital%20displays&width=1200&height=400&seq=hero1&orientation=landscape')`
@@ -46,14 +53,14 @@ export default function Home() {
               <h1 className="text-5xl font-bold mb-6">AfyaCare Clinical Module</h1>
               <p className="text-xl mb-8 opacity-90">Streamlined patient registration and triage system with real-time visibility across all departments</p>
               <div className="flex justify-center space-x-4">
-                <Link 
-                  href="/registration" 
+                <Link
+                  href="/registration"
                   className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors whitespace-nowrap cursor-pointer"
                 >
                   Start Registration
                 </Link>
-                <Link 
-                  href="/triage" 
+                <Link
+                  href="/triage"
                   className="bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-800 transition-colors whitespace-nowrap cursor-pointer"
                 >
                   Triage Queue

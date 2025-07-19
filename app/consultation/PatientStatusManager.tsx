@@ -194,7 +194,7 @@ export default function PatientStatusManager({ patient, onStatusChange }: {
             </div>
             <div className="text-right">
               <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
-                Current Status: {patient.status || & apos;In Consultation&apos;}
+                Current Status: {patient.status || "In Consultation"}
               </span>
             </div>
           </div>

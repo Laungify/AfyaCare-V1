@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export default function SystemIntegration({ patient }: {
   patient: { id: string; name: string; age: number } | null;
@@ -160,18 +160,8 @@ export default function SystemIntegration({ patient }: {
     }
   };
 
-  useEffect(() => {
-    // Simulate real-time connection monitoring
-    const interval = setInterval(() => {
-      updateConnectionHealth();
-      syncExternalData();
-    }, 30000); // Update every 30 seconds
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const updateConnectionHealth = () => {
-    const health = {};
+  const updateConnectionHealth = useCallback(() => {
+    const health: ConnectionHealthType = {};
     integrationSystems.forEach(system => {
       health[system.id] = {
         responseTime: Math.floor(Math.random() * 200) + 50, // 50-250ms
@@ -181,9 +171,9 @@ export default function SystemIntegration({ patient }: {
       };
     });
     setConnectionHealth(health);
-  };
+  }, [integrationSystems]);
 
-  const syncExternalData = () => {
+  const syncExternalData = useCallback(() => {
     if (!patient) return;
 
     const progress: SyncProgressType = {};
@@ -208,7 +198,17 @@ export default function SystemIntegration({ patient }: {
       });
       setSyncProgress(completedProgress);
     }, 3000);
-  };
+  }, [patient, integrationSystems]);
+
+  useEffect(() => {
+    // Simulate real-time connection monitoring
+    const interval = setInterval(() => {
+      updateConnectionHealth();
+      syncExternalData();
+    }, 30000); // Update every 30 seconds
+
+    return () => clearInterval(interval);
+  }, [updateConnectionHealth, syncExternalData]);
 
   const getStatusColor = (status: string) => {
     switch (status) {

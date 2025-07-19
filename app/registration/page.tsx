@@ -1,4 +1,3 @@
-
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
@@ -98,7 +97,7 @@ export default function RegistrationPage() {
           <div className="space-y-6">
             {/* Quick Stats */}
             <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold mb-4">Today's Registration</h3>
+              <h3 className="text-lg font-semibold mb-4">Today&apos;s Registration</h3>
               <div className="space-y-4">
                 <div className="flex justify-between">
                   <span className="text-gray-600">New Patients</span>

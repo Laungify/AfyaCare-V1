@@ -1,6 +1,6 @@
-
 'use client';
 import { useState } from 'react';
+import Image from 'next/image';
 
 type Patient = {
   id: string;
@@ -156,11 +156,15 @@ export default function PatientSearch({ onPatientFound, onNewPatient }: PatientS
                     onClick={() => onPatientFound(patient)}
                   >
                     <div className="flex items-center space-x-4">
-                      <img
-                        src={patient.photo}
-                        alt={patient.name}
-                        className="w-16 h-16 rounded-full object-cover object-top"
-                      />
+                      <div className="relative w-16 h-16 rounded-full overflow-hidden">
+                        <Image
+                          src={patient.photo}
+                          alt={`${patient.name} profile photo`}
+                          fill
+                          sizes="64px"
+                          className="object-cover object-top"
+                        />
+                      </div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
                           <h4 className="font-semibold text-gray-900">{patient.name}</h4>
