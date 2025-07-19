@@ -2,27 +2,50 @@
 'use client';
 import { useState } from 'react';
 
-interface Patient {
-  id?: string;
-  name?: string;
-  nationalId?: string;
-  phone?: string;
+export interface Patient {
+  id: string;
+  name: string;
+  firstName?: string;
+  lastName?: string;
+  age: number;
+  dateOfBirth: Date | string;
+  gender: 'Male' | 'Female' | 'Other';
+  phone: string;
   email?: string;
-  dateOfBirth?: string;
-  gender?: string;
   address?: string;
-  emergencyContactName?: string;
+  emergencyContact?: string;
   emergencyContactPhone?: string;
-  bloodGroup?: string;
-  allergies?: string;
-  medicalHistory?: string;
+  nationalId?: string;
+  occupation?: string;
+  maritalStatus?: 'Single' | 'Married' | 'Divorced' | 'Widowed';
+  nextOfKin?: string;
+  nextOfKinPhone?: string;
+  allergies?: string[];
+  medicalHistory?: string[];
+  currentMedications?: string[];
   insuranceProvider?: string;
   insuranceNumber?: string;
-  preferredLanguage?: string;
+  registrationDate?: Date | string;
+  registrationTime?: Date | string; // Make this optional
+  lastVisit?: Date | string;
+  patientType?: 'New' | 'Returning';
+  priority?: 'Normal' | 'High' | 'Emergency';
+  bloodGroup?: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
+  weight?: number;
+  height?: number;
+  queuePosition?: number;
+  vitals?: {
+    bloodPressure?: string;
+    heartRate?: number;
+    temperature?: number;
+    respiratoryRate?: number;
+    oxygenSaturation?: number;
+  };
 }
 
+
 interface RegistrationFormProps {
-  patient?: Patient;
+  patient?: Patient | null;
   isUpdate?: boolean;
   onComplete: (patientData: any) => void;
   onBack: () => void;
@@ -70,7 +93,7 @@ export default function RegistrationForm({ patient, isUpdate, onComplete, onBack
         registrationTime: new Date().toISOString(),
         queuePosition: Math.floor(Math.random() * 10) + 1
       };
-      
+
       onComplete(patientData);
       setIsSubmitting(false);
     }, 2000);
@@ -104,11 +127,10 @@ export default function RegistrationForm({ patient, isUpdate, onComplete, onBack
           <button
             key={tab.key}
             onClick={() => setCurrentTab(tab.key)}
-            className={`flex-1 flex items-center justify-center space-x-2 px-4 py-2 rounded-md transition-colors cursor-pointer whitespace-nowrap ${
-              currentTab === tab.key
+            className={`flex-1 flex items-center justify-center space-x-2 px-4 py-2 rounded-md transition-colors cursor-pointer whitespace-nowrap ${currentTab === tab.key
                 ? 'bg-white text-blue-600 shadow-sm'
                 : 'text-gray-600 hover:text-gray-800'
-            }`}
+              }`}
           >
             <i className={`${tab.icon} text-sm`}></i>
             <span className="text-sm font-medium">{tab.label}</span>
@@ -396,11 +418,10 @@ export default function RegistrationForm({ patient, isUpdate, onComplete, onBack
                   ].map((priority) => (
                     <label
                       key={priority.value}
-                      className={`flex items-center p-3 rounded-lg border cursor-pointer ${
-                        formData.priority === priority.value
+                      className={`flex items-center p-3 rounded-lg border cursor-pointer ${formData.priority === priority.value
                           ? `${priority.bg} border-current ${priority.color}`
                           : 'bg-white border-gray-300'
-                      }`}
+                        }`}
                     >
                       <input
                         type="radio"
@@ -428,13 +449,12 @@ export default function RegistrationForm({ patient, isUpdate, onComplete, onBack
             {tabButtons.map((tab, index) => (
               <div
                 key={tab.key}
-                className={`w-2 h-2 rounded-full ${
-                  currentTab === tab.key ? 'bg-blue-600' : 'bg-gray-300'
-                }`}
+                className={`w-2 h-2 rounded-full ${currentTab === tab.key ? 'bg-blue-600' : 'bg-gray-300'
+                  }`}
               ></div>
             ))}
           </div>
-          
+
           <div className="flex space-x-4">
             {currentTab !== 'personal' && (
               <button
@@ -448,7 +468,7 @@ export default function RegistrationForm({ patient, isUpdate, onComplete, onBack
                 Previous
               </button>
             )}
-            
+
             {currentTab !== 'visit' ? (
               <button
                 type="button"

@@ -1,18 +1,49 @@
-
-'use client';
-
-type Patient = {
-  id: string | number;
+export interface Patient {
+  id: string;
   name: string;
-  registrationTime: string | number | Date;
-  queuePosition: number;
-  priority: 'Emergency' | 'Urgent' | 'Normal' | string;
-};
+  firstName?: string;
+  lastName?: string;
+  age: number;
+  dateOfBirth: Date | string;
+  gender: 'Male' | 'Female' | 'Other';
+  phone: string;
+  email?: string;
+  address?: string;
+  emergencyContact?: string;
+  emergencyContactPhone?: string;
+  nationalId?: string;
+  occupation?: string;
+  maritalStatus?: 'Single' | 'Married' | 'Divorced' | 'Widowed';
+  nextOfKin?: string;
+  nextOfKinPhone?: string;
+  allergies?: string[];
+  medicalHistory?: string[];
+  currentMedications?: string[];
+  insuranceProvider?: string;
+  insuranceNumber?: string;
+  registrationDate?: Date | string;
+  registrationTime?: Date | string; // Make this optional
+  lastVisit?: Date | string;
+  patientType?: 'New' | 'Returning';
+  priority?: 'Normal' | 'High' | 'Emergency';
+  bloodGroup?: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
+  weight?: number;
+  height?: number;
+  queuePosition?: number;
+  vitals?: {
+    bloodPressure?: string;
+    heartRate?: number;
+    temperature?: number;
+    respiratoryRate?: number;
+    oxygenSaturation?: number;
+  };
+}
 
-type QueueStatusProps = {
+// Update the QueueStatusProps interface:
+export interface QueueStatusProps {
   patient: Patient;
   onNewRegistration: () => void;
-};
+}
 
 export default function QueueStatus({ patient, onNewRegistration }: QueueStatusProps) {
   return (
