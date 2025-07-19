@@ -2,16 +2,47 @@
 import { useState } from 'react';
 import Image from 'next/image';
 
-type Patient = {
+// Import or redefine the Patient type to match the main interface
+interface Patient {
   id: string;
   name: string;
-  nationalId: string;
-  phone: string;
+  firstName?: string;
+  lastName?: string;
   age: number;
-  gender: string;
-  lastVisit: string;
-  photo: string;
-};
+  dateOfBirth: Date | string; // Make this required and match main interface
+  gender: 'Male' | 'Female' | 'Other';
+  phone: string;
+  email?: string;
+  address?: string;
+  emergencyContact?: string;
+  emergencyContactPhone?: string;
+  nationalId?: string;
+  occupation?: string;
+  maritalStatus?: 'Single' | 'Married' | 'Divorced' | 'Widowed';
+  nextOfKin?: string;
+  nextOfKinPhone?: string;
+  allergies?: string[];
+  medicalHistory?: string[];
+  currentMedications?: string[];
+  insuranceProvider?: string;
+  insuranceNumber?: string;
+  registrationDate?: Date | string;
+  registrationTime?: Date | string | number;
+  lastVisit?: Date | string;
+  patientType?: 'New' | 'Returning';
+  priority?: 'Normal' | 'High' | 'Emergency';
+  bloodGroup?: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
+  weight?: number;
+  height?: number;
+  queuePosition?: number;
+  vitals?: {
+    bloodPressure?: string;
+    heartRate?: number;
+    temperature?: number;
+    respiratoryRate?: number;
+    oxygenSaturation?: number;
+  };
+}
 
 interface PatientSearchProps {
   onPatientFound: (patient: Patient) => void;
@@ -24,37 +55,49 @@ export default function PatientSearch({ onPatientFound, onNewPatient }: PatientS
   const [isSearching, setIsSearching] = useState(false);
   const [searchPerformed, setSearchPerformed] = useState(false);
 
-  // Mock patient data
-  const mockPatients = [
+  // Mock patient data - updated to match the full Patient interface
+  const mockPatients: Patient[] = [
     {
       id: 'PID001',
       name: 'John Mwangi',
+      firstName: 'John',
+      lastName: 'Mwangi',
       nationalId: '12345678',
       phone: '+254712345678',
       age: 34,
+      dateOfBirth: '1990-01-15', // Added required dateOfBirth
       gender: 'Male',
       lastVisit: '2024-01-15',
-      photo: 'https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20an%20African%20man%20in%20his%20thirties%2C%20clean%20background%2C%20medical%20record%20photo%20style&width=80&height=80&seq=patient1&orientation=squarish'
+      patientType: 'Returning',
+      email: 'john.mwangi@email.com',
     },
     {
       id: 'PID002',
       name: 'Mary Wanjiku',
+      firstName: 'Mary',
+      lastName: 'Wanjiku',
       nationalId: '87654321',
       phone: '+254798765432',
       age: 28,
+      dateOfBirth: '1996-03-22', // Added required dateOfBirth
       gender: 'Female',
       lastVisit: '2024-01-10',
-      photo: 'https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20an%20African%20woman%20in%20her%20twenties%2C%20clean%20background%2C%20medical%20record%20photo%20style&width=80&height=80&seq=patient2&orientation=squarish'
+      patientType: 'Returning',
+      email: 'mary.wanjiku@email.com',
     },
     {
       id: 'PID003',
       name: 'David Ochieng',
+      firstName: 'David',
+      lastName: 'Ochieng',
       nationalId: '11223344',
       phone: '+254723456789',
       age: 45,
+      dateOfBirth: '1979-07-08', // Added required dateOfBirth
       gender: 'Male',
       lastVisit: '2024-01-08',
-      photo: 'https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20an%20African%20man%20in%20his%20forties%2C%20clean%20background%2C%20medical%20record%20photo%20style&width=80&height=80&seq=patient3&orientation=squarish'
+      patientType: 'Returning',
+      email: 'david.ochieng@email.com',
     }
   ];
 
@@ -68,12 +111,22 @@ export default function PatientSearch({ onPatientFound, onNewPatient }: PatientS
     setTimeout(() => {
       const results = mockPatients.filter(patient => 
         patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        patient.nationalId.includes(searchTerm) ||
+        patient.nationalId?.includes(searchTerm) ||
         patient.phone.includes(searchTerm)
       );
       setSearchResults(results);
       setIsSearching(false);
     }, 1000);
+  };
+
+  const getPatientPhoto = (patientId: string, name: string) => {
+    // Generate a consistent photo URL based on patient data
+    const photoMap: Record<string, string> = {
+      'PID001': 'https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20an%20African%20man%20in%20his%20thirties%2C%20clean%20background%2C%20medical%20record%20photo%20style&width=80&height=80&seq=patient1&orientation=squarish',
+      'PID002': 'https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20an%20African%20woman%20in%20her%20twenties%2C%20clean%20background%2C%20medical%20record%20photo%20style&width=80&height=80&seq=patient2&orientation=squarish',
+      'PID003': 'https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20an%20African%20man%20in%20his%20forties%2C%20clean%20background%2C%20medical%20record%20photo%20style&width=80&height=80&seq=patient3&orientation=squarish'
+    };
+    return photoMap[patientId] || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&size=80&background=f3f4f6&color=374151`;
   };
 
   return (
@@ -158,7 +211,7 @@ export default function PatientSearch({ onPatientFound, onNewPatient }: PatientS
                     <div className="flex items-center space-x-4">
                       <div className="relative w-16 h-16 rounded-full overflow-hidden">
                         <Image
-                          src={patient.photo}
+                          src={getPatientPhoto(patient.id, patient.name)}
                           alt={`${patient.name} profile photo`}
                           fill
                           sizes="64px"

@@ -1,12 +1,41 @@
 'use client';
 import { useState } from 'react';
 
-export default function InventoryTracking() {
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [showLowStock, setShowLowStock] = useState(false);
+interface InventoryItem {
+  id: string;
+  name: string;
+  category: string;
+  sku: string;
+  currentStock: number;
+  minStock: number;
+  maxStock: number;
+  unit: string;
+  costPerUnit: number;
+  supplier: string;
+  expiryDate: string;
+  batchNumber: string;
+  status: string;
+  lastRestocked: string;
+  usageRate: string;
+  daysUntilReorder: number;
+  nearExpiry?: boolean;
+}
 
-  // Mock inventory data
-  const inventoryItems = [
+interface FilterOption {
+  key: string;
+  label: string;
+  color: string;
+}
+
+// InventoryTracking component
+// This component displays the inventory tracking dashboard with filters and item details
+// It includes critical alerts, inventory overview, filters, and a list of inventory items
+export default function InventoryTracking() {
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [showLowStock, setShowLowStock] = useState<boolean>(false);
+
+  // Mock inventory data with proper typing
+  const inventoryItems: InventoryItem[] = [
     {
       id: 'INV001',
       name: 'CBC Reagent Pack',
@@ -154,13 +183,13 @@ export default function InventoryTracking() {
     }
   ];
 
-  const filteredItems = inventoryItems.filter(item => {
+  const filteredItems: InventoryItem[] = inventoryItems.filter(item => {
     const categoryMatch = selectedCategory === 'all' || item.category === selectedCategory;
     const stockMatch = !showLowStock || item.status.includes('Low') || item.status === 'Critical Low';
     return categoryMatch && stockMatch;
   });
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string): string => {
     switch (status) {
       case 'Critical Low': return 'text-red-600 bg-red-50 border-red-200';
       case 'Low Stock': return 'text-orange-600 bg-orange-50 border-orange-200';
@@ -170,7 +199,7 @@ export default function InventoryTracking() {
     }
   };
 
-  const getCategoryIcon = (category) => {
+  const getCategoryIcon = (category: string): string => {
     switch (category) {
       case 'Laboratory Reagents': return 'ri-flask-line';
       case 'Point-of-Care': return 'ri-heart-pulse-line';
@@ -180,21 +209,29 @@ export default function InventoryTracking() {
     }
   };
 
-  const calculateStockPercentage = (current, min, max) => {
+  const calculateStockPercentage = (current: number, min: number, max: number): number => {
     return ((current - min) / (max - min)) * 100;
   };
 
-  const isNearExpiry = (expiryDate) => {
+  const isNearExpiry = (expiryDate: string): boolean => {
     const today = new Date();
     const expiry = new Date(expiryDate);
-    const diffTime = expiry - today;
+    const diffTime = expiry.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays <= 90; // Within 90 days
   };
 
-  const criticalItems = inventoryItems.filter(item => 
+  const criticalItems: InventoryItem[] = inventoryItems.filter(item =>
     item.status === 'Critical Low' || item.status === 'Low Stock' || isNearExpiry(item.expiryDate)
   );
+
+  const filterOptions: FilterOption[] = [
+    { key: 'all', label: 'All', color: 'bg-gray-100 text-gray-700' },
+    { key: 'Laboratory Reagents', label: 'Lab Reagents', color: 'bg-blue-100 text-blue-700' },
+    { key: 'Point-of-Care', label: 'Point-of-Care', color: 'bg-green-100 text-green-700' },
+    { key: 'Imaging Supplies', label: 'Imaging', color: 'bg-purple-100 text-purple-700' },
+    { key: 'Sample Collection', label: 'Collection', color: 'bg-orange-100 text-orange-700' }
+  ];
 
   return (
     <div className="space-y-6">
@@ -302,7 +339,7 @@ export default function InventoryTracking() {
               />
               <span className="text-sm font-medium text-gray-700">Show Low Stock Only</span>
             </label>
-            
+
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-600">Category:</span>
               <div className="flex space-x-2">
@@ -316,11 +353,10 @@ export default function InventoryTracking() {
                   <button
                     key={filter.key}
                     onClick={() => setSelectedCategory(filter.key)}
-                    className={`px-3 py-1 rounded-full text-sm font-medium transition-colors cursor-pointer whitespace-nowrap ${
-                      selectedCategory === filter.key
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition-colors cursor-pointer whitespace-nowrap ${selectedCategory === filter.key
                         ? filter.color
                         : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-                    }`}
+                      }`}
                   >
                     {filter.label}
                   </button>
@@ -337,16 +373,14 @@ export default function InventoryTracking() {
           <div key={item.id} className="bg-white rounded-lg p-6 shadow-sm border">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-start space-x-3">
-                <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                  item.category === 'Laboratory Reagents' ? 'bg-blue-100' :
-                  item.category === 'Point-of-Care' ? 'bg-green-100' :
-                  item.category === 'Imaging Supplies' ? 'bg-purple-100' : 'bg-orange-100'
-                }`}>
-                  <i className={`${getCategoryIcon(item.category)} text-xl ${
-                    item.category === 'Laboratory Reagents' ? 'text-blue-600' :
-                    item.category === 'Point-of-Care' ? 'text-green-600' :
-                    item.category === 'Imaging Supplies' ? 'text-purple-600' : 'text-orange-600'
-                  }`}></i>
+                <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${item.category === 'Laboratory Reagents' ? 'bg-blue-100' :
+                    item.category === 'Point-of-Care' ? 'bg-green-100' :
+                      item.category === 'Imaging Supplies' ? 'bg-purple-100' : 'bg-orange-100'
+                  }`}>
+                  <i className={`${getCategoryIcon(item.category)} text-xl ${item.category === 'Laboratory Reagents' ? 'text-blue-600' :
+                      item.category === 'Point-of-Care' ? 'text-green-600' :
+                        item.category === 'Imaging Supplies' ? 'text-purple-600' : 'text-orange-600'
+                    }`}></i>
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900">{item.name}</h3>
@@ -370,10 +404,9 @@ export default function InventoryTracking() {
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className={`h-2 rounded-full transition-all ${
-                      item.currentStock <= item.minStock ? 'bg-red-500' :
-                      item.currentStock <= item.minStock * 1.5 ? 'bg-orange-500' : 'bg-green-500'
-                    }`}
+                    className={`h-2 rounded-full transition-all ${item.currentStock <= item.minStock ? 'bg-red-500' :
+                        item.currentStock <= item.minStock * 1.5 ? 'bg-orange-500' : 'bg-green-500'
+                      }`}
                     style={{ width: `${Math.min((item.currentStock / item.maxStock) * 100, 100)}%` }}
                   ></div>
                 </div>
@@ -406,9 +439,8 @@ export default function InventoryTracking() {
               </div>
 
               {/* Expiry Information */}
-              <div className={`p-3 rounded-lg ${
-                isNearExpiry(item.expiryDate) ? 'bg-orange-50 border border-orange-200' : 'bg-gray-50'
-              }`}>
+              <div className={`p-3 rounded-lg ${isNearExpiry(item.expiryDate) ? 'bg-orange-50 border border-orange-200' : 'bg-gray-50'
+                }`}>
                 <div className="flex justify-between items-center text-sm">
                   <div>
                     <p className="text-gray-600">Expiry Date</p>

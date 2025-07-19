@@ -1,4 +1,3 @@
-
 'use client';
 import { useState } from 'react';
 
@@ -18,7 +17,7 @@ interface Patient {
 }
 
 interface TriageAssessmentProps {
-  patient: Patient;
+  patient: Patient | null; // Allow null patient
   onComplete: () => void;
   onBack: () => void;
 }
@@ -125,8 +124,10 @@ export default function TriageAssessment({ patient, onComplete, onBack }: Triage
     return Math.min(score, 10);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!patient) return; // Type guard
+    
     setIsSubmitting(true);
     
     const urgencyScore = calculateUrgencyScore();

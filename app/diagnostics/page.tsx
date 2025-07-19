@@ -35,20 +35,56 @@ export interface TestType {
   };
 }
 
+// Unified Order interface that matches all component expectations
 export interface TestOrder {
   id: string;
   patient: Patient;
+  patientId: string;
+  patientName: string;
+  age: number;
+  gender: string;
   tests: TestType[];
-  orderDate: Date;
+  orderDate: Date | string;
+  orderTime: string;
+  orderedBy: string;
+  department: string;
   priority: 'Routine' | 'Urgent' | 'STAT';
   status: 'Pending' | 'In Progress' | 'Sample Collected' | 'Completed' | 'Cancelled';
+  category: string;
   orderingPhysician: string;
-  department?: string;
   totalAmount: number;
+  totalCost: number; // Added for LabExecution compatibility
   paymentStatus: 'Pending' | 'Partial' | 'Paid';
   sampleId?: string;
   collectionDate?: Date;
   expectedCompletionDate: Date;
+  insuranceCoverage: number;
+  notes?: string;
+}
+
+// Alternative: Create a separate Order type for LabExecution if needed
+export interface Order {
+  id: string;
+  patientId: string;
+  patientName: string;
+  age: number;
+  gender: string;
+  orderDate: string;
+  orderTime: string;
+  orderedBy: string;
+  department: string;
+  priority: string;
+  status: string;
+  category: string;
+  totalCost: number;
+  paymentStatus: string;
+  insuranceCoverage: number;
+  tests: TestType[];
+  patient: Patient;
+  orderingPhysician: string;
+  expectedCompletionDate: Date;
+  sampleId?: string;
+  collectionDate?: Date;
   notes?: string;
 }
 
@@ -116,13 +152,29 @@ export interface InventoryItem {
   lastRestocked: Date;
 }
 
-// Component Props Types
+// Updated Component Props Types to match expected interfaces
 export interface TestOrderManagementProps {
-  onOrderSelect: (order: TestOrder) => void;
+  onOrderSelect: (order: {
+    id: string;
+    patientId: string;
+    patientName: string;
+    age: number;
+    gender: string;
+    orderDate: string;
+    orderTime: string;
+    orderedBy: string;
+    department: string;
+    priority: string;
+    status: string;
+    category: string;
+    totalCost: number;
+    paymentStatus: string;
+    insuranceCoverage: number;
+  }) => void;
 }
 
 export interface LabExecutionProps {
-  order: TestOrder | null;
+  order: Order | null;
   onComplete: () => void;
   onBack: () => void;
 }
@@ -131,18 +183,99 @@ export interface ResultsManagementProps {}
 export interface QualityControlProps {}
 export interface InventoryTrackingProps {}
 
-export default function DiagnosticsPage() {
-  const [activeTab, setActiveTab] = useState('orders');
-  const [selectedOrder, setSelectedOrder] = useState<TestOrder | null>(null);
+// Tab Type
+type TabType = 'orders' | 'execution' | 'results' | 'quality' | 'inventory';
 
-  const handleOrderSelect = (order: TestOrder) => {
-    setSelectedOrder(order);
+// Tab Configuration Interface
+interface TabConfig {
+  id: TabType;
+  icon: string;
+  label: string;
+}
+
+// Stats Card Interface
+interface StatsCard {
+  label: string;
+  value: string | number;
+  color: 'orange' | 'blue' | 'green' | 'red' | 'purple';
+  icon: string;
+}
+
+export default function DiagnosticsPage() {
+  const [activeTab, setActiveTab] = useState<TabType>('orders');
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+
+  const handleOrderSelect = (order: {
+    id: string;
+    patientId: string;
+    patientName: string;
+    age: number;
+    gender: string;
+    orderDate: string;
+    orderTime: string;
+    orderedBy: string;
+    department: string;
+    priority: string;
+    status: string;
+    category: string;
+    totalCost: number;
+    paymentStatus: string;
+    insuranceCoverage: number;
+  }): void => {
+    // Convert the order from TestOrderManagement to Order type
+    const convertedOrder: Order = {
+      ...order,
+      totalCost: order.totalCost,
+      tests: [], // You may need to populate this from your data source
+      patient: {
+        id: order.patientId,
+        name: order.patientName,
+        age: order.age,
+        gender: order.gender as 'Male' | 'Female' | 'Other',
+        phone: '', // You may need to get this from your data source
+      },
+      orderingPhysician: '', // You may need to get this from your data source
+      expectedCompletionDate: new Date(), // You may need to calculate this
+    };
+    
+    setSelectedOrder(convertedOrder);
     setActiveTab('execution');
   };
 
-  const handleResultComplete = () => {
+  const handleResultComplete = (): void => {
     setSelectedOrder(null);
     setActiveTab('results');
+  };
+
+  const handleTabClick = (tab: TabType): void => {
+    setActiveTab(tab);
+  };
+
+  const tabConfigs: TabConfig[] = [
+    { id: 'orders', icon: 'ri-file-list-line', label: 'Test Orders' },
+    { id: 'execution', icon: 'ri-microscope-line', label: 'Lab Execution' },
+    { id: 'results', icon: 'ri-bar-chart-line', label: 'Results' },
+    { id: 'quality', icon: 'ri-shield-check-line', label: 'Quality Control' },
+    { id: 'inventory', icon: 'ri-archive-line', label: 'Inventory' }
+  ];
+
+  const statsData: StatsCard[] = [
+    { label: 'Pending Tests', value: 24, color: 'orange', icon: 'ri-flask-line' },
+    { label: 'In Progress', value: 12, color: 'blue', icon: 'ri-time-line' },
+    { label: 'Completed Today', value: 87, color: 'green', icon: 'ri-check-line' },
+    { label: 'Critical Results', value: 3, color: 'red', icon: 'ri-alarm-warning-line' },
+    { label: 'Revenue Today', value: 'KSh 89,500', color: 'purple', icon: 'ri-money-dollar-circle-line' }
+  ];
+
+  const getColorClasses = (color: StatsCard['color']) => {
+    const colorMap = {
+      orange: 'text-orange-600 bg-orange-100',
+      blue: 'text-blue-600 bg-blue-100',
+      green: 'text-green-600 bg-green-100',
+      red: 'text-red-600 bg-red-100',
+      purple: 'text-purple-600 bg-purple-100'
+    };
+    return colorMap[color];
   };
 
   return (
@@ -159,125 +292,38 @@ export default function DiagnosticsPage() {
 
         {/* Stats Overview */}
         <div className="grid md:grid-cols-5 gap-6 mb-8">
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Pending Tests</p>
-                <p className="text-2xl font-bold text-orange-600">24</p>
-              </div>
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                <i className="ri-flask-line text-orange-600 text-xl"></i>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">In Progress</p>
-                <p className="text-2xl font-bold text-blue-600">12</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <i className="ri-time-line text-blue-600 text-xl"></i>
+          {statsData.map((stat, index) => (
+            <div key={index} className="bg-white rounded-lg p-6 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">{stat.label}</p>
+                  <p className={`text-2xl font-bold ${getColorClasses(stat.color)}`}>{stat.value}</p>
+                </div>
+                <div className={`w-12 h-12 ${getColorClasses(stat.color)} rounded-lg flex items-center justify-center`}>
+                  <i className={`${stat.icon} text-xl`}></i>
+                </div>
               </div>
             </div>
-          </div>
-
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Completed Today</p>
-                <p className="text-2xl font-bold text-green-600">87</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <i className="ri-check-line text-green-600 text-xl"></i>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Critical Results</p>
-                <p className="text-2xl font-bold text-red-600">3</p>
-              </div>
-              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                <i className="ri-alarm-warning-line text-red-600 text-xl"></i>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Revenue Today</p>
-                <p className="text-2xl font-bold text-purple-600">KSh 89,500</p>
-              </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <i className="ri-money-dollar-circle-line text-purple-600 text-xl"></i>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
 
         {/* Tab Navigation */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
-            <button
-              onClick={() => setActiveTab('orders')}
-              className={`px-6 py-2 rounded-md transition-colors cursor-pointer whitespace-nowrap flex items-center space-x-2 ${
-                activeTab === 'orders'
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-800'
-              }`}
-            >
-              <i className="ri-file-list-line"></i>
-              <span>Test Orders</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('execution')}
-              className={`px-6 py-2 rounded-md transition-colors cursor-pointer whitespace-nowrap flex items-center space-x-2 ${
-                activeTab === 'execution'
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-800'
-              }`}
-            >
-              <i className="ri-microscope-line"></i>
-              <span>Lab Execution</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('results')}
-              className={`px-6 py-2 rounded-md transition-colors cursor-pointer whitespace-nowrap flex items-center space-x-2 ${
-                activeTab === 'results'
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-800'
-              }`}
-            >
-              <i className="ri-bar-chart-line"></i>
-              <span>Results</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('quality')}
-              className={`px-6 py-2 rounded-md transition-colors cursor-pointer whitespace-nowrap flex items-center space-x-2 ${
-                activeTab === 'quality'
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-800'
-              }`}
-            >
-              <i className="ri-shield-check-line"></i>
-              <span>Quality Control</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('inventory')}
-              className={`px-6 py-2 rounded-md transition-colors cursor-pointer whitespace-nowrap flex items-center space-x-2 ${
-                activeTab === 'inventory'
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-800'
-              }`}
-            >
-              <i className="ri-archive-line"></i>
-              <span>Inventory</span>
-            </button>
+            {tabConfigs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => handleTabClick(tab.id)}
+                className={`px-6 py-2 rounded-md transition-colors cursor-pointer whitespace-nowrap flex items-center space-x-2 ${
+                  activeTab === tab.id
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                <i className={tab.icon}></i>
+                <span>{tab.label}</span>
+              </button>
+            ))}
           </div>
 
           <div className="flex items-center space-x-4">
@@ -305,7 +351,7 @@ export default function DiagnosticsPage() {
           <LabExecution 
             order={selectedOrder}
             onComplete={handleResultComplete}
-            onBack={() => setActiveTab('orders')}
+            onBack={() => handleTabClick('orders')}
           />
         )}
         

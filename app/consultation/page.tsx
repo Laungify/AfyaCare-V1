@@ -325,7 +325,7 @@ export default function ConsultationPage() {
         )}
 
         {activeTab === 'treatment' && (
-          <TreatmentPlanning patient={selectedPatient} />
+          <TreatmentPlanning patient={selectedPatient ?? undefined} />
         )}
 
         {activeTab === 'communication' && (
@@ -359,11 +359,17 @@ export default function ConsultationPage() {
         )}
 
         {activeTab === 'quality' && (
-          <QualityAssurance patient={selectedPatient} />
+          <QualityAssurance patient={selectedPatient ?? undefined} />
         )}
 
         {activeTab === 'integration' && (
-          <SystemIntegration patient={selectedPatient} />
+          <SystemIntegration
+            patient={
+              selectedPatient
+                ? { id: selectedPatient.id, name: selectedPatient.name, age: selectedPatient.age }
+                : null
+            }
+          />
         )}
       </div>
     </div>

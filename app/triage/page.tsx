@@ -1,4 +1,3 @@
-
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
@@ -7,15 +6,24 @@ import QueueManagement from './QueueManagement';
 import TriageAssessment from './TriageAssessment';
 import PatientList from './PatientList';
 
+// Define a Patient type or import it if already defined elsewhere
+type Patient = {
+  id: string;
+  name: string;
+  age: number;
+  gender: string;
+  reason?: string;
+  arrivalTime?: string;
+  waitTime?: string;
+  vitals?: {
+    bp?: string;
+    temp?: string;
+    pulse?: string;
+  };
+};
+
 export default function TriagePage() {
   const [activeTab, setActiveTab] = useState('queue');
-  // Define a Patient type or import it if already defined elsewhere
-  type Patient = {
-    id: string;
-    name: string;
-    // Add other relevant fields as needed
-  };
-
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
 
   const handlePatientSelect = (patient: Patient) => {
