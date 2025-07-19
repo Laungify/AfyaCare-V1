@@ -70,11 +70,18 @@ export default function QueueStatus({ patient, onNewRegistration }: QueueStatusP
             <p className="text-sm text-gray-600">Patient ID: {patient.id}</p>
           </div>
         </div>
-        
+
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-gray-600">Registration Time:</span>
-            <span className="font-medium">{new Date(patient.registrationTime).toLocaleTimeString()}</span>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Registration Time:</span>
+              <span className="font-medium">
+                {patient.registrationTime
+                  ? new Date(patient.registrationTime).toLocaleTimeString()
+                  : 'N/A'}
+              </span>
+            </div>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">Queue Position:</span>
@@ -82,11 +89,10 @@ export default function QueueStatus({ patient, onNewRegistration }: QueueStatusP
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">Priority Level:</span>
-            <span className={`font-medium ${
-              patient.priority === 'Emergency' ? 'text-red-600' :
-              patient.priority === 'Urgent' ? 'text-orange-600' : 'text-green-600'
-            }`}>
-              {patient.priority}
+            <span className={`font-medium ${patient.priority === 'Emergency' ? 'text-red-600' :
+              patient.priority === 'High' ? 'text-orange-600' : 'text-green-600'
+              }`}>
+              {patient.priority || 'Normal'} {/* Fallback for undefined */}
             </span>
           </div>
           <div className="flex justify-between">
@@ -122,7 +128,7 @@ export default function QueueStatus({ patient, onNewRegistration }: QueueStatusP
             <span className="text-sm font-medium">12 patients</span>
           </div>
         </div>
-        
+
         <div className="mt-4 pt-4 border-t">
           <p className="text-sm text-gray-600">
             Estimated wait time: <span className="font-medium">25-30 minutes</span>
@@ -139,7 +145,7 @@ export default function QueueStatus({ patient, onNewRegistration }: QueueStatusP
           <i className="ri-printer-line"></i>
           <span>Print Queue Ticket</span>
         </button>
-        
+
         <button
           onClick={onNewRegistration}
           className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2 cursor-pointer whitespace-nowrap"
