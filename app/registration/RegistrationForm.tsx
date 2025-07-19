@@ -58,7 +58,11 @@ export default function RegistrationForm({ patient, isUpdate, onComplete, onBack
     nationalId: patient?.nationalId || '',
     phone: patient?.phone || '',
     email: patient?.email || '',
-    dateOfBirth: patient?.dateOfBirth || '',
+    dateOfBirth: patient?.dateOfBirth
+      ? patient.dateOfBirth instanceof Date
+        ? patient.dateOfBirth.toISOString().split('T')[0]
+        : patient.dateOfBirth
+      : '',
     gender: patient?.gender || '',
     address: patient?.address || '',
     emergencyContactName: patient?.emergencyContact || '',
@@ -70,7 +74,7 @@ export default function RegistrationForm({ patient, isUpdate, onComplete, onBack
     insuranceNumber: patient?.insuranceNumber || '',
     preferredLanguage: patient?.preferredLanguage || 'English',
     visitReason: '',
-    priority: 'Normal'
+    priority: 'Normal',
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -128,8 +132,8 @@ export default function RegistrationForm({ patient, isUpdate, onComplete, onBack
             key={tab.key}
             onClick={() => setCurrentTab(tab.key)}
             className={`flex-1 flex items-center justify-center space-x-2 px-4 py-2 rounded-md transition-colors cursor-pointer whitespace-nowrap ${currentTab === tab.key
-                ? 'bg-white text-blue-600 shadow-sm'
-                : 'text-gray-600 hover:text-gray-800'
+              ? 'bg-white text-blue-600 shadow-sm'
+              : 'text-gray-600 hover:text-gray-800'
               }`}
           >
             <i className={`${tab.icon} text-sm`}></i>
@@ -419,8 +423,8 @@ export default function RegistrationForm({ patient, isUpdate, onComplete, onBack
                     <label
                       key={priority.value}
                       className={`flex items-center p-3 rounded-lg border cursor-pointer ${formData.priority === priority.value
-                          ? `${priority.bg} border-current ${priority.color}`
-                          : 'bg-white border-gray-300'
+                        ? `${priority.bg} border-current ${priority.color}`
+                        : 'bg-white border-gray-300'
                         }`}
                     >
                       <input
