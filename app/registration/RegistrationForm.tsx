@@ -26,7 +26,7 @@ export interface Patient {
   insuranceProvider?: string;
   insuranceNumber?: string;
   registrationDate?: Date | string;
-  registrationTime?: Date | string; // Make this optional
+  registrationTime?: Date | string;
   lastVisit?: Date | string;
   patientType?: 'New' | 'Returning';
   priority?: 'Normal' | 'High' | 'Emergency';
@@ -41,8 +41,8 @@ export interface Patient {
     respiratoryRate?: number;
     oxygenSaturation?: number;
   };
+  preferredLanguage?: string; // Add this
 }
-
 
 interface RegistrationFormProps {
   patient?: Patient | null;
@@ -61,7 +61,7 @@ export default function RegistrationForm({ patient, isUpdate, onComplete, onBack
     dateOfBirth: patient?.dateOfBirth || '',
     gender: patient?.gender || '',
     address: patient?.address || '',
-    emergencyContactName: patient?.emergencyContactName || '',
+    emergencyContactName: patient?.emergencyContact || '',
     emergencyContactPhone: patient?.emergencyContactPhone || '',
     bloodGroup: patient?.bloodGroup || '',
     allergies: patient?.allergies || '',
