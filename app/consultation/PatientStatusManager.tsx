@@ -60,7 +60,7 @@ export default function PatientStatusManager({ patient, onStatusChange }: {
 
   const handleDispositionChange = (disposition: string) => {
     setStatusDecision(prev => ({ ...prev, disposition }));
-    
+
     if (disposition === 'admit') {
       setAvailableBeds(bedData.filter(bed => bed.available));
       setShowAdmissionModal(true);
@@ -69,7 +69,7 @@ export default function PatientStatusManager({ patient, onStatusChange }: {
     }
   };
 
-  const handleBedAssignment = (bed) => {
+  const handleBedAssignment = (bed: Bed) => {
     setStatusDecision(prev => ({
       ...prev,
       ward: bed.ward,
@@ -194,7 +194,7 @@ export default function PatientStatusManager({ patient, onStatusChange }: {
             </div>
             <div className="text-right">
               <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
-                Current Status: {patient.status || 'In Consultation'}
+                Current Status: {patient.status || & apos;In Consultation&apos;}
               </span>
             </div>
           </div>
@@ -214,11 +214,10 @@ export default function PatientStatusManager({ patient, onStatusChange }: {
             <button
               key={option.value}
               onClick={() => handleDispositionChange(option.value)}
-              className={`p-6 rounded-lg border-2 text-center transition-colors cursor-pointer ${
-                statusDecision.disposition === option.value
+              className={`p-6 rounded-lg border-2 text-center transition-colors cursor-pointer ${statusDecision.disposition === option.value
                   ? `bg-${option.color}-50 border-${option.color}-500 text-${option.color}-700`
                   : 'border-gray-300 hover:border-gray-400'
-              }`}
+                }`}
             >
               <i className={`${option.icon} text-3xl mb-3 block`}></i>
               <span className="font-medium">{option.label}</span>
@@ -398,11 +397,10 @@ export default function PatientStatusManager({ patient, onStatusChange }: {
                     {availableBeds.map((bed, index) => (
                       <div
                         key={index}
-                        className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
-                          statusDecision.bedNumber === bed.bedNumber
+                        className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${statusDecision.bedNumber === bed.bedNumber
                             ? 'border-blue-500 bg-blue-50'
                             : 'border-gray-300 hover:border-gray-400'
-                        }`}
+                          }`}
                         onClick={() => handleBedAssignment(bed)}
                       >
                         <div className="flex justify-between items-start mb-2">
@@ -521,7 +519,7 @@ export default function PatientStatusManager({ patient, onStatusChange }: {
 
                 <div className="flex justify-between items-center pt-6 border-t">
                   <div className="text-sm text-gray-600">
-                    <p>Discharge summary will be generated and sent to patient's primary care physician</p>
+                    <p>Discharge summary will be generated and sent to patient&apos;s primary care physician</p>
                   </div>
                   <div className="flex space-x-4">
                     <button

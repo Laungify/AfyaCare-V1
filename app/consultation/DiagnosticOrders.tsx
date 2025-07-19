@@ -598,11 +598,11 @@ export default function DiagnosticOrders({ patient }: {
                     value={currentOrder.clinicalIndication}
                     onChange={(e) => setCurrentOrder(prev => ({ ...prev, clinicalIndication: e.target.value }))}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                    rows="3"
+                    rows={3}
                     placeholder="Provide clinical indication and relevant history for the requested tests/procedures"
-                    maxLength="500"
+                    maxLength={500}
                     required
-                  ></textarea>
+                  />
                 </div>
 
                 <div>
@@ -616,7 +616,7 @@ export default function DiagnosticOrders({ patient }: {
                     rows={2}
                     placeholder="Any special instructions for the laboratory, imaging, or surgical team"
                     maxLength={300}
-                  ></textarea>
+                  />
                 </div>
               </div>
 
@@ -649,7 +649,7 @@ export default function DiagnosticOrders({ patient }: {
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">No Diagnostic Orders</h3>
           <p className="text-gray-600">
-            Click "New Order" to request laboratory tests, imaging studies, or surgical procedures.
+            Click &quot;New Order&quot; to request laboratory tests, imaging studies, or surgical procedures.
           </p>
         </div>
       )}
