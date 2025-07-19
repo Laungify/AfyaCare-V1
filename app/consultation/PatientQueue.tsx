@@ -1,7 +1,40 @@
 'use client';
 import { useState } from 'react';
 
-export default function PatientQueue({ onPatientSelect }) {
+
+
+// Define types
+type Patient = {
+  id: string;
+  name: string;
+  age: number;
+  gender: string;
+  triageTime: string;
+  waitTime: string;
+  priority: 'Emergency' | 'Urgent' | 'Normal';
+  triageLevel: string;
+  chiefComplaint: string;
+  vitals: {
+    bp: string;
+    temp: string;
+    pulse: string;
+    spo2: string;
+    rr: string;
+  };
+  triageNotes: string;
+  allergies: string[];
+  currentMeds: string[];
+  assignedDoctor: string;
+  department: string;
+  riskFlags: string[];
+  status: 'waiting' | 'emergency' | 'in-consultation';
+};
+
+type PatientQueueProps = {
+  onPatientSelect: (patient: Patient) => void;
+};
+
+export default function PatientQueue({ onPatientSelect }: PatientQueueProps) {
   const [selectedDoctor, setSelectedDoctor] = useState('all');
   const [selectedPriority, setSelectedPriority] = useState('all');
 
@@ -147,7 +180,7 @@ export default function PatientQueue({ onPatientSelect }) {
     return doctorMatch && priorityMatch;
   });
 
-  const getPriorityColor = (priority) => {
+  const getPriorityColor = (priority: Patient['priority']) => {
     switch (priority) {
       case 'Emergency': return 'text-red-600 bg-red-50 border-red-200';
       case 'Urgent': return 'text-orange-600 bg-orange-50 border-orange-200';
@@ -156,7 +189,7 @@ export default function PatientQueue({ onPatientSelect }) {
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: Patient['status']) => {
     switch (status) {
       case 'waiting': return 'text-blue-600 bg-blue-50';
       case 'emergency': return 'text-red-600 bg-red-50';
@@ -292,10 +325,10 @@ export default function PatientQueue({ onPatientSelect }) {
                     <span className="text-sm text-gray-600">
                       {patient.age}yo • {patient.gender}
                     </span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(patient.priority)}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(patient.priority as Patient['priority'])}`}>
                       {patient.priority} • {patient.triageLevel}
                     </span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(patient.status)}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(patient.status as Patient['status'])}`}>
                       {patient.status.replace('-', ' ')}
                     </span>
                   </div>
@@ -363,7 +396,7 @@ export default function PatientQueue({ onPatientSelect }) {
 
               <div className="flex flex-col space-y-2">
                 <button
-                  onClick={() => onPatientSelect(patient)}
+                  onClick={() => onPatientSelect(patient as Patient)}
                   className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm cursor-pointer whitespace-nowrap"
                 >
                   Start Consultation

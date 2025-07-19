@@ -1,7 +1,17 @@
 'use client';
 import { useState } from 'react';
 
-export default function QualityAssurance({ patient }) {
+type Patient = {
+  id: string;
+  name: string;
+  // Add other patient properties as needed
+};
+
+interface QualityAssuranceProps {
+  patient?: Patient;
+}
+
+export default function QualityAssurance({ patient }: QualityAssuranceProps) {
   const [auditTrail, setAuditTrail] = useState([]);
   const [qualityMetrics, setQualityMetrics] = useState({});
   const [activeTab, setActiveTab] = useState('audit');
@@ -148,7 +158,7 @@ export default function QualityAssurance({ patient }) {
     }
   ];
 
-  const getActionIcon = (action) => {
+  const getActionIcon = (action: string) => {
     switch (action) {
       case 'Patient Queue Access': return 'ri-team-line text-blue-500';
       case 'Medical History Review': return 'ri-history-line text-green-500';
@@ -160,7 +170,7 @@ export default function QualityAssurance({ patient }) {
     }
   };
 
-  const getComplianceColor = (flag) => {
+  const getComplianceColor = (flag: string) => {
     switch (flag) {
       case 'HIPAA_COMPLIANT': return 'text-green-600 bg-green-50';
       case 'AUTHORIZED_ACCESS': return 'text-blue-600 bg-blue-50';
@@ -172,7 +182,7 @@ export default function QualityAssurance({ patient }) {
     }
   };
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
       case 'passed': return 'ri-check-line text-green-500';
       case 'warning': return 'ri-alert-line text-yellow-500';

@@ -2,8 +2,52 @@
 'use client';
 import { useState } from 'react';
 
-export default function TriageAssessment({ patient, onComplete, onBack }) {
-  const [assessment, setAssessment] = useState({
+interface Patient {
+  id: string;
+  name: string;
+  age: number;
+  gender: string;
+  reason?: string;
+  arrivalTime?: string;
+  waitTime?: string;
+  vitals?: {
+    bp?: string;
+    temp?: string;
+    pulse?: string;
+  };
+}
+
+interface TriageAssessmentProps {
+  patient: Patient;
+  onComplete: () => void;
+  onBack: () => void;
+}
+
+export default function TriageAssessment({ patient, onComplete, onBack }: TriageAssessmentProps) {
+  interface AssessmentState {
+    chiefComplaint: string;
+    painLevel: string | number;
+    vitalSigns: {
+      bloodPressure: string;
+      temperature: string;
+      pulse: string;
+      respiratoryRate: string;
+      oxygenSaturation: string;
+      weight: string;
+      height: string;
+    };
+    symptoms: string[];
+    mentalStatus: string;
+    mobility: string;
+    allergies: string;
+    currentMedications: string;
+    triageCategory: string;
+    department: string;
+    notes: string;
+    urgencyScore: number;
+  }
+
+  const [assessment, setAssessment] = useState<AssessmentState>({
     chiefComplaint: patient?.reason || '',
     painLevel: '',
     vitalSigns: {
@@ -47,7 +91,7 @@ export default function TriageAssessment({ patient, onComplete, onBack }) {
     'Orthopedics', 'Cardiology', 'Neurology', 'Psychiatry', 'Obstetrics'
   ];
 
-  const handleSymptomToggle = (symptom) => {
+  const handleSymptomToggle = (symptom: string) => {
     setAssessment(prev => ({
       ...prev,
       symptoms: prev.symptoms.includes(symptom)
@@ -60,9 +104,10 @@ export default function TriageAssessment({ patient, onComplete, onBack }) {
     let score = 0;
     
     // Pain level scoring
-    if (assessment.painLevel >= 8) score += 3;
-    else if (assessment.painLevel >= 5) score += 2;
-    else if (assessment.painLevel >= 3) score += 1;
+    const painLevelNum = typeof assessment.painLevel === 'number' ? assessment.painLevel : parseInt(assessment.painLevel, 10) || 0;
+    if (painLevelNum >= 8) score += 3;
+    else if (painLevelNum >= 5) score += 2;
+    else if (painLevelNum >= 3) score += 1;
     
     // Vital signs scoring
     const bp = assessment.vitalSigns.bloodPressure;
@@ -159,9 +204,9 @@ export default function TriageAssessment({ patient, onComplete, onBack }) {
             value={assessment.chiefComplaint}
             onChange={(e) => setAssessment(prev => ({ ...prev, chiefComplaint: e.target.value }))}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-            rows="3"
+            rows={3}
             placeholder="Patient's primary concern or reason for visit"
-            maxLength="500"
+            maxLength={500}
             required
           ></textarea>
         </div>
@@ -381,9 +426,9 @@ export default function TriageAssessment({ patient, onComplete, onBack }) {
             value={assessment.notes}
             onChange={(e) => setAssessment(prev => ({ ...prev, notes: e.target.value }))}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-            rows="4"
+            rows={4}
             placeholder="Any additional observations, concerns, or instructions"
-            maxLength="500"
+            maxLength={500}
           ></textarea>
         </div>
 

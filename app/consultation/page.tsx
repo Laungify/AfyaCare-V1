@@ -1,4 +1,3 @@
-
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
@@ -16,9 +15,25 @@ import SystemIntegration from './SystemIntegration';
 
 export default function ConsultationPage() {
   const [activeTab, setActiveTab] = useState('queue');
-  const [selectedPatient, setSelectedPatient] = useState(null);
+  
+  // Define a Patient type or interface if not already defined
+  type Patient = {
+    id: string;
+    name: string;
+    age: number;
+    gender: string;
+    chiefComplaint: string;
+    triageLevel: string;
+    vitals: {
+      [key: string]: string | number;
+    };
+    status?: string;
+    // Add other relevant fields as needed
+  };
 
-  const handlePatientSelect = (patient) => {
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+
+  const handlePatientSelect = (patient: Patient) => {
     setSelectedPatient(patient);
     setActiveTab('interview');
   };
@@ -28,9 +43,9 @@ export default function ConsultationPage() {
     setActiveTab('queue');
   };
 
-  const handlePatientStatusChange = (newStatus) => {
+  const handlePatientStatusChange = (newStatus: string) => {
     if (selectedPatient) {
-      setSelectedPatient(prev => ({ ...prev, status: newStatus }));
+      setSelectedPatient(prev => prev ? { ...prev, status: newStatus } : null);
     }
   };
 
@@ -258,7 +273,7 @@ export default function ConsultationPage() {
           <PatientQueue onPatientSelect={handlePatientSelect} />
         )}
 
-        {activeTab === 'interview' && (
+        {activeTab === 'interview' && selectedPatient && (
           <ConsultationInterface
             patient={selectedPatient}
             onComplete={handleConsultationComplete}
@@ -270,11 +285,30 @@ export default function ConsultationPage() {
           <PrescriptionManager patient={selectedPatient} />
         )}
 
-        {activeTab === 'diagnostics' && (
+        {/* Fixed: Only render DiagnosticOrders when patient is selected and remove onComplete prop if not expected */}
+        {activeTab === 'diagnostics' && selectedPatient && (
           <DiagnosticOrders
-            patient={selectedPatient}
-            onComplete={() => alert('Diagnostic orders submitted successfully!')}
+            patient={{
+              id: selectedPatient.id,
+              name: selectedPatient.name,
+              age: selectedPatient.age,
+              gender: selectedPatient.gender
+            }}
           />
+        )}
+
+        {activeTab === 'diagnostics' && !selectedPatient && (
+          <div className="bg-white rounded-lg p-8 text-center">
+            <i className="ri-user-line text-4xl text-gray-300 mb-4"></i>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No Patient Selected</h3>
+            <p className="text-gray-600 mb-4">Please select a patient from the queue to view diagnostic orders.</p>
+            <button
+              onClick={() => setActiveTab('queue')}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Go to Patient Queue
+            </button>
+          </div>
         )}
 
         {activeTab === 'treatment' && (
@@ -282,18 +316,33 @@ export default function ConsultationPage() {
         )}
 
         {activeTab === 'communication' && (
-          <CommunicationHub patient={selectedPatient} />
+          <CommunicationHub patient={selectedPatient ?? undefined} />
         )}
 
         {activeTab === 'history' && (
           <ConsultationHistory />
         )}
 
-        {activeTab === 'status' && (
+        {/* Fixed: Only render PatientStatusManager when patient is selected */}
+        {activeTab === 'status' && selectedPatient && (
           <PatientStatusManager
             patient={selectedPatient}
             onStatusChange={handlePatientStatusChange}
           />
+        )}
+
+        {activeTab === 'status' && !selectedPatient && (
+          <div className="bg-white rounded-lg p-8 text-center">
+            <i className="ri-user-settings-line text-4xl text-gray-300 mb-4"></i>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No Patient Selected</h3>
+            <p className="text-gray-600 mb-4">Please select a patient from the queue to manage their status.</p>
+            <button
+              onClick={() => setActiveTab('queue')}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Go to Patient Queue
+            </button>
+          </div>
         )}
 
         {activeTab === 'quality' && (

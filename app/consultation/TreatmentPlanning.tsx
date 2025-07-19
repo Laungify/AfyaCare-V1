@@ -1,8 +1,43 @@
 'use client';
 import { useState } from 'react';
 
-export default function TreatmentPlanning({ patient }) {
-  const [treatmentPlan, setTreatmentPlan] = useState({
+// Type definitions
+interface Patient {
+  name: string;
+  age: number;
+  gender: string;
+  chiefComplaint: string;
+}
+
+interface TreatmentPlan {
+  primaryDiagnosis: string;
+  secondaryDiagnoses: string[];
+  treatmentGoals: string[];
+  interventions: string[];
+  medications: string[];
+  lifestyle: string;
+  followUpPlan: string;
+  emergencyInstructions: string;
+  patientEducation: string;
+  expectedOutcome: string;
+  riskFactors: string[];
+  contraindications: string;
+}
+
+interface TreatmentTemplate {
+  name: string;
+  goals: string[];
+  interventions: string[];
+  lifestyle: string;
+  followUp: string;
+}
+
+interface TreatmentPlanningProps {
+  patient?: Patient;
+}
+
+export default function TreatmentPlanning({ patient }: TreatmentPlanningProps) {
+  const [treatmentPlan, setTreatmentPlan] = useState<TreatmentPlan>({
     primaryDiagnosis: '',
     secondaryDiagnoses: [],
     treatmentGoals: [],
@@ -17,10 +52,10 @@ export default function TreatmentPlanning({ patient }) {
     contraindications: ''
   });
 
-  const [newGoal, setNewGoal] = useState('');
-  const [newIntervention, setNewIntervention] = useState('');
+  const [newGoal, setNewGoal] = useState<string>('');
+  const [newIntervention, setNewIntervention] = useState<string>('');
 
-  const commonTreatmentGoals = [
+  const commonTreatmentGoals: string[] = [
     'Symptom relief',
     'Disease management',
     'Prevention of complications',
@@ -33,7 +68,7 @@ export default function TreatmentPlanning({ patient }) {
     'Smoking cessation'
   ];
 
-  const commonInterventions = [
+  const commonInterventions: string[] = [
     'Medication therapy',
     'Physical therapy',
     'Dietary modification',
@@ -46,7 +81,7 @@ export default function TreatmentPlanning({ patient }) {
     'Psychological support'
   ];
 
-  const treatmentTemplates = [
+  const treatmentTemplates: TreatmentTemplate[] = [
     {
       name: 'Hypertension Management',
       goals: ['Blood pressure control < 130/80', 'Cardiovascular risk reduction'],
@@ -70,7 +105,7 @@ export default function TreatmentPlanning({ patient }) {
     }
   ];
 
-  const applyTemplate = (template) => {
+  const applyTemplate = (template: TreatmentTemplate): void => {
     setTreatmentPlan(prev => ({
       ...prev,
       treatmentGoals: template.goals,
@@ -80,7 +115,7 @@ export default function TreatmentPlanning({ patient }) {
     }));
   };
 
-  const addTreatmentGoal = () => {
+  const addTreatmentGoal = (): void => {
     if (newGoal.trim()) {
       setTreatmentPlan(prev => ({
         ...prev,
@@ -90,7 +125,7 @@ export default function TreatmentPlanning({ patient }) {
     }
   };
 
-  const addIntervention = () => {
+  const addIntervention = (): void => {
     if (newIntervention.trim()) {
       setTreatmentPlan(prev => ({
         ...prev,
@@ -100,23 +135,36 @@ export default function TreatmentPlanning({ patient }) {
     }
   };
 
-  const removeGoal = (index) => {
+  const removeGoal = (index: number): void => {
     setTreatmentPlan(prev => ({
       ...prev,
       treatmentGoals: prev.treatmentGoals.filter((_, i) => i !== index)
     }));
   };
 
-  const removeIntervention = (index) => {
+  const removeIntervention = (index: number): void => {
     setTreatmentPlan(prev => ({
       ...prev,
       interventions: prev.interventions.filter((_, i) => i !== index)
     }));
   };
 
-  const saveTreatmentPlan = () => {
+  const saveTreatmentPlan = (): void => {
     console.log('Treatment Plan Saved:', treatmentPlan);
     alert('Treatment plan saved successfully!');
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>, action: () => void): void => {
+    if (e.key === 'Enter') {
+      action();
+    }
+  };
+
+  const handleInputChange = (field: keyof TreatmentPlan, value: string): void => {
+    setTreatmentPlan(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   return (
@@ -166,7 +214,7 @@ export default function TreatmentPlanning({ patient }) {
         <input
           type="text"
           value={treatmentPlan.primaryDiagnosis}
-          onChange={(e) => setTreatmentPlan(prev => ({ ...prev, primaryDiagnosis: e.target.value }))}
+          onChange={(e) => handleInputChange('primaryDiagnosis', e.target.value)}
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
           placeholder="Enter primary diagnosis..."
         />
@@ -184,7 +232,7 @@ export default function TreatmentPlanning({ patient }) {
               onChange={(e) => setNewGoal(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               placeholder="Add treatment goal..."
-              onKeyPress={(e) => e.key === 'Enter' && addTreatmentGoal()}
+              onKeyPress={(e) => handleKeyPress(e, addTreatmentGoal)}
             />
           </div>
           <div>
@@ -239,7 +287,7 @@ export default function TreatmentPlanning({ patient }) {
               onChange={(e) => setNewIntervention(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               placeholder="Add intervention..."
-              onKeyPress={(e) => e.key === 'Enter' && addIntervention()}
+              onKeyPress={(e) => handleKeyPress(e, addIntervention)}
             />
           </div>
           <div>
@@ -288,24 +336,24 @@ export default function TreatmentPlanning({ patient }) {
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Lifestyle Modifications</h3>
           <textarea
             value={treatmentPlan.lifestyle}
-            onChange={(e) => setTreatmentPlan(prev => ({ ...prev, lifestyle: e.target.value }))}
+            onChange={(e) => handleInputChange('lifestyle', e.target.value)}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-            rows="5"
+            rows={5}
             placeholder="Diet, exercise, lifestyle changes..."
-            maxLength="1000"
-          ></textarea>
+            maxLength={1000}
+          />
         </div>
 
         <div className="bg-white rounded-lg p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Follow-up Plan</h3>
           <textarea
             value={treatmentPlan.followUpPlan}
-            onChange={(e) => setTreatmentPlan(prev => ({ ...prev, followUpPlan: e.target.value }))}
+            onChange={(e) => handleInputChange('followUpPlan', e.target.value)}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-            rows="5"
+            rows={5}
             placeholder="Follow-up appointments, monitoring schedule..."
-            maxLength="1000"
-          ></textarea>
+            maxLength={1000}
+          />
         </div>
       </div>
 
@@ -315,24 +363,24 @@ export default function TreatmentPlanning({ patient }) {
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Patient Education</h3>
           <textarea
             value={treatmentPlan.patientEducation}
-            onChange={(e) => setTreatmentPlan(prev => ({ ...prev, patientEducation: e.target.value }))}
+            onChange={(e) => handleInputChange('patientEducation', e.target.value)}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-            rows="4"
+            rows={4}
             placeholder="Key points to educate patient about their condition and treatment..."
-            maxLength="1000"
-          ></textarea>
+            maxLength={1000}
+          />
         </div>
 
         <div className="bg-white rounded-lg p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Emergency Instructions</h3>
           <textarea
             value={treatmentPlan.emergencyInstructions}
-            onChange={(e) => setTreatmentPlan(prev => ({ ...prev, emergencyInstructions: e.target.value }))}
+            onChange={(e) => handleInputChange('emergencyInstructions', e.target.value)}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-            rows="4"
+            rows={4}
             placeholder="When to seek immediate medical attention..."
-            maxLength="1000"
-          ></textarea>
+            maxLength={1000}
+          />
         </div>
       </div>
 
@@ -341,12 +389,12 @@ export default function TreatmentPlanning({ patient }) {
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Expected Outcome & Prognosis</h3>
         <textarea
           value={treatmentPlan.expectedOutcome}
-          onChange={(e) => setTreatmentPlan(prev => ({ ...prev, expectedOutcome: e.target.value }))}
+          onChange={(e) => handleInputChange('expectedOutcome', e.target.value)}
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-          rows="3"
+          rows={3}
           placeholder="Expected treatment outcomes, recovery timeline, prognosis..."
-          maxLength="500"
-        ></textarea>
+          maxLength={500}
+        />
       </div>
 
       {/* Save Treatment Plan */}

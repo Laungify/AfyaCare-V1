@@ -2,7 +2,26 @@
 'use client';
 import { useState } from 'react';
 
-export default function PatientList({ onPatientSelect }) {
+type Patient = {
+  id: string;
+  name: string;
+  age: number;
+  gender: string;
+  triageCategory: string;
+  department: string;
+  status: string;
+  arrivalTime: string;
+  triageTime: string;
+  assignedTo: string;
+  priority: string;
+  waitTime: string;
+};
+
+interface PatientListProps {
+  onPatientSelect: (patient: Patient) => void;
+}
+
+export default function PatientList({ onPatientSelect }: PatientListProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
 
@@ -102,7 +121,7 @@ export default function PatientList({ onPatientSelect }) {
     return matchesSearch && matchesStatus;
   });
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'Waiting for Doctor': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
       case 'In Treatment': return 'text-blue-600 bg-blue-50 border-blue-200';
@@ -112,7 +131,7 @@ export default function PatientList({ onPatientSelect }) {
     }
   };
 
-  const getCategoryColor = (category) => {
+  const getCategoryColor = (category: string) => {
     switch (category) {
       case 'Level 1': return 'text-red-600 bg-red-50';
       case 'Level 2': return 'text-orange-600 bg-orange-50';

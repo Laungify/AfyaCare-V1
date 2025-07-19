@@ -1,8 +1,65 @@
 'use client';
 import { useState } from 'react';
 
-export default function LabExecution({ order, onComplete, onBack }) {
-  const [executionData, setExecutionData] = useState({
+interface Test {
+  code: string;
+  name: string;
+}
+
+interface Order {
+  id: string;
+  patientName: string;
+  age: number;
+  gender: string;
+  patientId: string;
+  priority: string;
+  orderedBy: string;
+  tests: Test[];
+  totalCost: number;
+}
+
+interface LabExecutionProps {
+  order: Order | null;
+  onComplete: () => void;
+  onBack: () => void;
+}
+
+interface Parameter {
+  name: string;
+  unit: string;
+  normalRange: string;
+  criticalLow: number;
+  criticalHigh: number;
+}
+
+interface TestTemplate {
+  parameters: Parameter[];
+  equipment: string;
+  consumables: string[];
+}
+
+interface CriticalValue {
+  test: string;
+  parameter: string;
+  value: number;
+  type: 'critically_low' | 'critically_high';
+}
+
+interface ExecutionData {
+  technician: string;
+  startTime: string;
+  currentTest: number;
+  testResults: Record<string, Record<string, string>>;
+  qualityControlPassed: boolean;
+  equipmentUsed: Record<string, any>;
+  consumablesUsed: Record<string, any>;
+  notes: string;
+  criticalValues: CriticalValue[];
+  flaggedResults: any[];
+}
+
+export default function LabExecution({ order, onComplete, onBack }: LabExecutionProps) {
+  const [executionData, setExecutionData] = useState<ExecutionData>({
     technician: 'Mary Wanjiku, MLT',
     startTime: new Date().toISOString(),
     currentTest: 0,
@@ -15,8 +72,8 @@ export default function LabExecution({ order, onComplete, onBack }) {
     flaggedResults: []
   });
 
-  const [currentStep, setCurrentStep] = useState('preparation');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentStep, setCurrentStep] = useState<'preparation' | 'execution' | 'review'>('preparation');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   if (!order) {
     return (
@@ -36,7 +93,7 @@ export default function LabExecution({ order, onComplete, onBack }) {
     );
   }
 
-  const testTemplates = {
+  const testTemplates: Record<string, TestTemplate> = {
     'CBC': {
       parameters: [
         { name: 'Hemoglobin', unit: 'g/dL', normalRange: '12.0-15.5', criticalLow: 7, criticalHigh: 20 },
@@ -70,7 +127,7 @@ export default function LabExecution({ order, onComplete, onBack }) {
     }
   };
 
-  const handleParameterChange = (testCode, parameterName, value) => {
+  const handleParameterChange = (testCode: string, parameterName: string, value: string): void => {
     setExecutionData(prev => ({
       ...prev,
       testResults: {
@@ -101,7 +158,7 @@ export default function LabExecution({ order, onComplete, onBack }) {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<void> => {
     setIsSubmitting(true);
     
     // Simulate result processing
@@ -289,9 +346,9 @@ export default function LabExecution({ order, onComplete, onBack }) {
           value={executionData.notes}
           onChange={(e) => setExecutionData(prev => ({ ...prev, notes: e.target.value }))}
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-          rows="4"
+          rows={4}
           placeholder="Any observations, technical notes, or comments about the testing process"
-          maxLength="500"
+          maxLength={500}
         ></textarea>
       </div>
 

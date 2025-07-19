@@ -2,8 +2,39 @@
 'use client';
 import { useState } from 'react';
 
-export default function PrescriptionManager({ patient }) {
-  const [prescriptions, setPrescriptions] = useState([]);
+interface Patient {
+  id: string | number;
+  name: string;
+  age: number;
+  gender: string;
+  weight?: number;
+  allergies?: string[];
+  currentMedications?: string[];
+}
+
+interface PrescriptionManagerProps {
+  patient: Patient;
+}
+
+interface Prescription {
+  id: number;
+  medication: string;
+  dosage: string;
+  frequency: string;
+  duration: string;
+  instructions: string;
+  quantity: string;
+  prescribedDate: string;
+  status: string;
+  prescriber: string;
+  digitalSignature: boolean;
+  sentTime?: string;
+}
+
+export default function PrescriptionManager({ patient }: PrescriptionManagerProps) {
+  const [prescriptionHistory, setPrescriptionHistory] = useState<Prescription[]>([]);
+
+  const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [currentPrescription, setCurrentPrescription] = useState({
     medication: '',
     dosage: '',
@@ -16,8 +47,7 @@ export default function PrescriptionManager({ patient }) {
   const [showDrugDatabase, setShowDrugDatabase] = useState(false);
   const [showInteractionAlert, setShowInteractionAlert] = useState(false);
   const [showAllergyAlert, setShowAllergyAlert] = useState(false);
-  const [prescriptionHistory, setPrescriptionHistory] = useState([]);
-  const [qrCode, setQrCode] = useState(null);
+  const [qrCode, setQrCode] = useState<string | null>(null);
   const [isGeneratingQR, setIsGeneratingQR] = useState(false);
 
   // Enhanced drug database with comprehensive information
@@ -134,8 +164,8 @@ export default function PrescriptionManager({ patient }) {
   ];
 
   // AI Decision Support Functions
-  const checkDrugInteractions = (newDrug) => {
-    const interactions = [];
+  const checkDrugInteractions = (newDrug: typeof drugDatabase[number]) => {
+    const interactions: { drug1: string; drug2: string; severity: string; description: string }[] = [];
     prescriptions.forEach(prescription => {
       const existingDrug = drugDatabase.find(drug => 
         prescription.medication.includes(drug.name)
@@ -153,10 +183,15 @@ export default function PrescriptionManager({ patient }) {
     return interactions;
   };
 
-  const checkAllergies = (drug) => {
+  const checkAllergies = (drug: typeof drugDatabase[number]) => {
     if (!patient?.allergies) return [];
     
-    const allergyAlerts = [];
+    const allergyAlerts: {
+      allergy: string;
+      drug: string;
+      severity: string;
+      recommendation: string;
+    }[] = [];
     patient.allergies.forEach(allergy => {
       if (drug.category.toLowerCase().includes(allergy.toLowerCase()) ||
           drug.name.toLowerCase().includes(allergy.toLowerCase())) {
@@ -171,7 +206,7 @@ export default function PrescriptionManager({ patient }) {
     return allergyAlerts;
   };
 
-  const calculatePediatricDose = (drug, weight) => {
+  const calculatePediatricDose = (drug: typeof drugDatabase[number], weight: number) => {
     if (!drug.pediatricDose || !weight) return null;
     
     const doseRange = drug.pediatricDose.match(/(\d+)-?(\d+)?mg\/kg/);
@@ -183,7 +218,7 @@ export default function PrescriptionManager({ patient }) {
     return null;
   };
 
-  const handleDrugSelect = (drug) => {
+  const handleDrugSelect = (drug: typeof drugDatabase[number]) => {
     // Check for interactions
     const interactions = checkDrugInteractions(drug);
     if (interactions.length > 0) {
@@ -240,7 +275,7 @@ export default function PrescriptionManager({ patient }) {
     }
   };
 
-  const removePrescription = (id) => {
+  const removePrescription = (id: number) => {
     setPrescriptions(prev => prev.filter(p => p.id !== id));
   };
 
@@ -284,7 +319,7 @@ export default function PrescriptionManager({ patient }) {
     alert('Prescriptions sent to pharmacy successfully with QR code!');
   };
 
-  const getDrugInfo = (drugName) => {
+  const getDrugInfo = (drugName: string) => {
     return drugDatabase.find(drug => 
       drugName.toLowerCase().includes(drug.name.toLowerCase())
     );
@@ -471,9 +506,9 @@ export default function PrescriptionManager({ patient }) {
               value={currentPrescription.instructions}
               onChange={(e) => setCurrentPrescription(prev => ({ ...prev, instructions: e.target.value }))}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-              rows="3"
+              rows={3}
               placeholder="Patient counseling points, special instructions..."
-              maxLength="300"
+              maxLength={300}
             ></textarea>
           </div>
         </div>

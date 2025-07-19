@@ -8,11 +8,134 @@ import ResultsManagement from './ResultsManagement';
 import QualityControl from './QualityControl';
 import InventoryTracking from './InventoryTracking';
 
+// Core Order Types
+export interface Patient {
+  id: string;
+  name: string;
+  age: number;
+  gender: 'Male' | 'Female' | 'Other';
+  phone: string;
+  email?: string;
+  address?: string;
+  emergencyContact?: string;
+}
+
+export interface TestType {
+  id: string;
+  name: string;
+  code: string;
+  category: string;
+  price: number;
+  turnaroundTime: number; // in hours
+  sampleType: 'Blood' | 'Urine' | 'Stool' | 'Swab' | 'Other';
+  normalRange?: {
+    min?: number;
+    max?: number;
+    unit: string;
+  };
+}
+
+export interface TestOrder {
+  id: string;
+  patient: Patient;
+  tests: TestType[];
+  orderDate: Date;
+  priority: 'Routine' | 'Urgent' | 'STAT';
+  status: 'Pending' | 'In Progress' | 'Sample Collected' | 'Completed' | 'Cancelled';
+  orderingPhysician: string;
+  department?: string;
+  totalAmount: number;
+  paymentStatus: 'Pending' | 'Partial' | 'Paid';
+  sampleId?: string;
+  collectionDate?: Date;
+  expectedCompletionDate: Date;
+  notes?: string;
+}
+
+// Lab Execution Types
+export interface LabResult {
+  testId: string;
+  testName: string;
+  value: string | number;
+  unit: string;
+  normalRange?: {
+    min?: number;
+    max?: number;
+  };
+  flag?: 'Normal' | 'High' | 'Low' | 'Critical';
+  method?: string;
+  technician: string;
+  completedDate: Date;
+  verified: boolean;
+  verifiedBy?: string;
+  notes?: string;
+}
+
+export interface LabExecution {
+  orderId: string;
+  status: 'Not Started' | 'In Progress' | 'Completed' | 'On Hold';
+  assignedTechnician: string;
+  startDate?: Date;
+  completionDate?: Date;
+  results: LabResult[];
+  qualityControlPassed: boolean;
+  instruments: string[];
+  notes?: string;
+}
+
+// Quality Control Types
+export interface QualityControlTest {
+  id: string;
+  testType: string;
+  controlLevel: 'Low' | 'Normal' | 'High';
+  expectedValue: number;
+  actualValue: number;
+  unit: string;
+  tolerance: number;
+  passed: boolean;
+  date: Date;
+  technician: string;
+  instrument: string;
+  lotNumber: string;
+}
+
+// Inventory Types
+export interface InventoryItem {
+  id: string;
+  name: string;
+  category: 'Reagent' | 'Consumable' | 'Equipment' | 'Control';
+  currentStock: number;
+  unit: string;
+  minThreshold: number;
+  maxThreshold: number;
+  cost: number;
+  supplier: string;
+  expiryDate: Date;
+  lotNumber: string;
+  storageConditions: string;
+  lastRestocked: Date;
+}
+
+// Component Props Types
+export interface TestOrderManagementProps {
+  onOrderSelect: (order: TestOrder) => void;
+}
+
+export interface LabExecutionProps {
+  order: TestOrder | null;
+  onComplete: () => void;
+  onBack: () => void;
+}
+
+export interface ResultsManagementProps {}
+export interface QualityControlProps {}
+export interface InventoryTrackingProps {}
+
 export default function DiagnosticsPage() {
   const [activeTab, setActiveTab] = useState('orders');
-  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState<TestOrder | null>(null);
 
-  const handleOrderSelect = (order) => {
+  const handleOrderSelect = (order: TestOrder) => {
     setSelectedOrder(order);
     setActiveTab('execution');
   };

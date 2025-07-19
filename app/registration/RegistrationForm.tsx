@@ -2,7 +2,33 @@
 'use client';
 import { useState } from 'react';
 
-export default function RegistrationForm({ patient, isUpdate, onComplete, onBack }) {
+interface Patient {
+  id?: string;
+  name?: string;
+  nationalId?: string;
+  phone?: string;
+  email?: string;
+  dateOfBirth?: string;
+  gender?: string;
+  address?: string;
+  emergencyContactName?: string;
+  emergencyContactPhone?: string;
+  bloodGroup?: string;
+  allergies?: string;
+  medicalHistory?: string;
+  insuranceProvider?: string;
+  insuranceNumber?: string;
+  preferredLanguage?: string;
+}
+
+interface RegistrationFormProps {
+  patient?: Patient;
+  isUpdate?: boolean;
+  onComplete: (patientData: any) => void;
+  onBack: () => void;
+}
+
+export default function RegistrationForm({ patient, isUpdate, onComplete, onBack }: RegistrationFormProps) {
   const [formData, setFormData] = useState({
     firstName: patient?.name?.split(' ')[0] || '',
     lastName: patient?.name?.split(' ').slice(1).join(' ') || '',
@@ -27,7 +53,7 @@ export default function RegistrationForm({ patient, isUpdate, onComplete, onBack
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentTab, setCurrentTab] = useState('personal');
 
-  const handleChange = (field, value) => {
+  const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -225,9 +251,9 @@ export default function RegistrationForm({ patient, isUpdate, onComplete, onBack
                   value={formData.address}
                   onChange={(e) => handleChange('address', e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                  rows="3"
+                  rows={3}
                   placeholder="Enter home address"
-                  maxLength="500"
+                  maxLength={500}
                 ></textarea>
               </div>
               <div>
@@ -318,9 +344,9 @@ export default function RegistrationForm({ patient, isUpdate, onComplete, onBack
                   value={formData.allergies}
                   onChange={(e) => handleChange('allergies', e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                  rows="3"
+                  rows={3}
                   placeholder="List any known allergies (medications, food, environmental)"
-                  maxLength="500"
+                  maxLength={500}
                 ></textarea>
               </div>
               <div className="md:col-span-2">
@@ -331,9 +357,9 @@ export default function RegistrationForm({ patient, isUpdate, onComplete, onBack
                   value={formData.medicalHistory}
                   onChange={(e) => handleChange('medicalHistory', e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                  rows="4"
+                  rows={4}
                   placeholder="Previous surgeries, chronic conditions, current medications"
-                  maxLength="500"
+                  maxLength={500}
                 ></textarea>
               </div>
             </div>
@@ -353,9 +379,9 @@ export default function RegistrationForm({ patient, isUpdate, onComplete, onBack
                   value={formData.visitReason}
                   onChange={(e) => handleChange('visitReason', e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                  rows="4"
+                  rows={4}
                   placeholder="Describe the reason for today's visit, symptoms, or concerns"
-                  maxLength="500"
+                  maxLength={500}
                 ></textarea>
               </div>
               <div>

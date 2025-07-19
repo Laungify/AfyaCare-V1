@@ -1,11 +1,7 @@
 'use client';
 import { useState } from 'react';
 
-export default function TestOrderManagement({ onOrderSelect }) {
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedPriority, setSelectedPriority] = useState('all');
-
-  // Mock test orders data
+// Mock test orders data
   const testOrders = [
     {
       id: 'ORD001',
@@ -104,13 +100,25 @@ export default function TestOrderManagement({ onOrderSelect }) {
     }
   ];
 
+
+type TestOrder = typeof testOrders[number];
+
+interface TestOrderManagementProps {
+  onOrderSelect: (order: TestOrder) => void;
+}
+
+export default function TestOrderManagement({ onOrderSelect }: TestOrderManagementProps) {
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedPriority, setSelectedPriority] = useState('all');
+
+  
   const filteredOrders = testOrders.filter(order => {
     const categoryMatch = selectedCategory === 'all' || order.category === selectedCategory;
     const priorityMatch = selectedPriority === 'all' || order.priority === selectedPriority;
     return categoryMatch && priorityMatch;
   });
 
-  const getPriorityColor = (priority) => {
+  const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'Emergency': return 'text-red-600 bg-red-50 border-red-200';
       case 'Urgent': return 'text-orange-600 bg-orange-50 border-orange-200';
@@ -119,7 +127,7 @@ export default function TestOrderManagement({ onOrderSelect }) {
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'Pending Payment': return 'text-orange-600 bg-orange-50';
       case 'Ready for Execution': return 'text-blue-600 bg-blue-50';
@@ -129,7 +137,7 @@ export default function TestOrderManagement({ onOrderSelect }) {
     }
   };
 
-  const getCategoryIcon = (category) => {
+  const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'Laboratory': return 'ri-flask-line';
       case 'Imaging': return 'ri-scan-line';

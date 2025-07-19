@@ -1,11 +1,31 @@
 'use client';
 import { useState } from 'react';
 
+type Consultation = {
+  id: string;
+  patientId: string;
+  patientName: string;
+  age: number;
+  gender: string;
+  consultationDate: string;
+  consultationTime: string;
+  doctor: string;
+  department: string;
+  chiefComplaint: string;
+  diagnosis: string;
+  icdCodes: string[];
+  treatmentPlan: string;
+  prescriptions: string[];
+  followUp: string;
+  status: string;
+  duration: string;
+};
+
 export default function ConsultationHistory() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDoctor, setFilterDoctor] = useState('all');
   const [filterPeriod, setFilterPeriod] = useState('all');
-  const [selectedConsultation, setSelectedConsultation] = useState(null);
+  const [selectedConsultation, setSelectedConsultation] = useState<Consultation | null>(null);
 
   // Mock consultation history data
   const consultationHistory = [
@@ -148,7 +168,7 @@ export default function ConsultationHistory() {
     return searchMatch && doctorMatch && periodMatch;
   });
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed': return 'text-green-600 bg-green-50';
       case 'in-progress': return 'text-blue-600 bg-blue-50';

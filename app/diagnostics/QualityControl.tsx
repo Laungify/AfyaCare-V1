@@ -148,7 +148,7 @@ export default function QualityControl() {
     ]
   };
 
-  const getSeverityColor = (severity) => {
+  const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'High': return 'text-red-600 bg-red-50 border-red-200';
       case 'Medium': return 'text-orange-600 bg-orange-50 border-orange-200';
@@ -157,7 +157,7 @@ export default function QualityControl() {
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'Active': return 'text-red-600 bg-red-50';
       case 'Resolved': return 'text-green-600 bg-green-50';
@@ -166,7 +166,7 @@ export default function QualityControl() {
     }
   };
 
-  const getEquipmentStatusColor = (status) => {
+  const getEquipmentStatusColor = (status: string) => {
     switch (status) {
       case 'Online': return 'text-green-600 bg-green-50';
       case 'Maintenance': return 'text-orange-600 bg-orange-50';
@@ -175,7 +175,7 @@ export default function QualityControl() {
     }
   };
 
-  const getTrendIcon = (trend) => {
+  const getTrendIcon = (trend: string) => {
     switch (trend) {
       case 'improving': return 'ri-arrow-up-line text-green-600';
       case 'declining': return 'ri-arrow-down-line text-red-600';

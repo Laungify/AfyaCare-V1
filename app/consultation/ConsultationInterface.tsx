@@ -1,8 +1,69 @@
 'use client';
 import { useState } from 'react';
 
-export default function ConsultationInterface({ patient, onComplete, onBack }) {
-  const [consultation, setConsultation] = useState({
+interface Patient {
+  id: string;
+  name: string;
+  age: number;
+  gender: string;
+  chiefComplaint: string;
+  triageLevel: string;
+  vitals: {
+    bp?: string;
+    temp?: string;
+    pulse?: string;
+    spo2?: string;
+    [key: string]: any;
+  };
+  [key: string]: any;
+}
+
+interface ConsultationInterfaceProps {
+  patient: Patient;
+  onComplete: () => void;
+  onBack: () => void;
+}
+
+export default function ConsultationInterface({ patient, onComplete, onBack }: ConsultationInterfaceProps) {
+  type IcdCode = { code: string; description: string };
+
+  const [consultation, setConsultation] = useState<{
+    historyOfPresentIllness: string;
+    pastMedicalHistory: string;
+    familyHistory: string;
+    socialHistory: string;
+    systemsReview: {
+      cardiovascular: boolean;
+      respiratory: boolean;
+      gastrointestinal: boolean;
+      genitourinary: boolean;
+      neurological: boolean;
+      musculoskeletal: boolean;
+      dermatological: boolean;
+      psychiatric: boolean;
+      [key: string]: boolean;
+    };
+    physicalExamination: {
+      general: string;
+      vitals: typeof patient.vitals;
+      cardiovascular: string;
+      respiratory: string;
+      abdomen: string;
+      neurological: string;
+      musculoskeletal: string;
+      skin: string;
+    };
+    assessment: string;
+    differentialDiagnosis: string[];
+    icdCodes: IcdCode[];
+    plan: string;
+    followUp: string;
+    referrals: string;
+    investigations: string[];
+    prescriptions: string[];
+    patientEducation: string;
+    disposition: string;
+  }>({
     historyOfPresentIllness: '',
     pastMedicalHistory: '',
     familyHistory: '',
@@ -77,7 +138,17 @@ export default function ConsultationInterface({ patient, onComplete, onBack }) {
     { key: 'plan', label: 'Plan', icon: 'ri-clipboard-line' }
   ];
 
-  const handleSystemsReviewChange = (system) => {
+  type SystemsReviewKey =
+    | 'cardiovascular'
+    | 'respiratory'
+    | 'gastrointestinal'
+    | 'genitourinary'
+    | 'neurological'
+    | 'musculoskeletal'
+    | 'dermatological'
+    | 'psychiatric';
+
+  const handleSystemsReviewChange = (system: SystemsReviewKey) => {
     setConsultation(prev => ({
       ...prev,
       systemsReview: {
@@ -87,7 +158,7 @@ export default function ConsultationInterface({ patient, onComplete, onBack }) {
     }));
   };
 
-  const handleIcdSelect = (code) => {
+  const handleIcdSelect = (code: { code: string; description: string }) => {
     if (!consultation.icdCodes.find(icd => icd.code === code.code)) {
       setConsultation(prev => ({
         ...prev,
@@ -97,7 +168,7 @@ export default function ConsultationInterface({ patient, onComplete, onBack }) {
     setIcdSearch('');
   };
 
-  const handleInvestigationToggle = (investigation) => {
+  const handleInvestigationToggle = (investigation: string) => {
     setConsultation(prev => ({
       ...prev,
       investigations: prev.investigations.includes(investigation)
@@ -106,7 +177,7 @@ export default function ConsultationInterface({ patient, onComplete, onBack }) {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     
@@ -237,9 +308,9 @@ export default function ConsultationInterface({ patient, onComplete, onBack }) {
                 value={consultation.historyOfPresentIllness}
                 onChange={(e) => setConsultation(prev => ({ ...prev, historyOfPresentIllness: e.target.value }))}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                rows="6"
+                rows={6}
                 placeholder="Describe the onset, duration, character, location, radiation, severity, and aggravating/relieving factors of the presenting complaint..."
-                maxLength="1000"
+                maxLength={1000}
               ></textarea>
             </div>
 
@@ -250,9 +321,9 @@ export default function ConsultationInterface({ patient, onComplete, onBack }) {
                   value={consultation.pastMedicalHistory}
                   onChange={(e) => setConsultation(prev => ({ ...prev, pastMedicalHistory: e.target.value }))}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                  rows="4"
+                  rows={6}
                   placeholder="Previous illnesses, surgeries, hospitalizations..."
-                  maxLength="500"
+                  maxLength={500}
                 ></textarea>
               </div>
 
@@ -262,9 +333,9 @@ export default function ConsultationInterface({ patient, onComplete, onBack }) {
                   value={consultation.familyHistory}
                   onChange={(e) => setConsultation(prev => ({ ...prev, familyHistory: e.target.value }))}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                  rows="4"
+                  rows={4}
                   placeholder="Family history of significant diseases..."
-                  maxLength="500"
+                  maxLength={500}
                 ></textarea>
               </div>
             </div>
@@ -284,7 +355,7 @@ export default function ConsultationInterface({ patient, onComplete, onBack }) {
                     <input
                       type="checkbox"
                       checked={consultation.systemsReview[system]}
-                      onChange={() => handleSystemsReviewChange(system)}
+                      onChange={() => handleSystemsReviewChange( system as SystemsReviewKey)}
                       className="mr-2"
                     />
                     <span className="text-sm capitalize">{system}</span>
@@ -307,9 +378,9 @@ export default function ConsultationInterface({ patient, onComplete, onBack }) {
                   physicalExamination: { ...prev.physicalExamination, general: e.target.value }
                 }))}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                rows="3"
+                rows={3}
                 placeholder="General appearance, mental state, nutrition, hydration..."
-                maxLength="500"
+                maxLength={500}
               ></textarea>
             </div>
 
@@ -323,9 +394,9 @@ export default function ConsultationInterface({ patient, onComplete, onBack }) {
                     physicalExamination: { ...prev.physicalExamination, cardiovascular: e.target.value }
                   }))}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                  rows="3"
+                  rows={3}
                   placeholder="Heart sounds, murmurs, peripheral pulses..."
-                  maxLength="300"
+                  maxLength={300}
                 ></textarea>
               </div>
 
@@ -338,9 +409,9 @@ export default function ConsultationInterface({ patient, onComplete, onBack }) {
                     physicalExamination: { ...prev.physicalExamination, respiratory: e.target.value }
                   }))}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                  rows="3"
+                  rows={3}
                   placeholder="Inspection, palpation, percussion, auscultation..."
-                  maxLength="300"
+                  maxLength={300}
                 ></textarea>
               </div>
 
@@ -353,9 +424,9 @@ export default function ConsultationInterface({ patient, onComplete, onBack }) {
                     physicalExamination: { ...prev.physicalExamination, abdomen: e.target.value }
                   }))}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                  rows="3"
+                  rows={3}
                   placeholder="Inspection, palpation, bowel sounds, organomegaly..."
-                  maxLength="300"
+                  maxLength={300}
                 ></textarea>
               </div>
 
@@ -368,9 +439,9 @@ export default function ConsultationInterface({ patient, onComplete, onBack }) {
                     physicalExamination: { ...prev.physicalExamination, neurological: e.target.value }
                   }))}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                  rows="3"
+                  rows={3}
                   placeholder="Cranial nerves, motor, sensory, reflexes..."
-                  maxLength="300"
+                  maxLength={300}
                 ></textarea>
               </div>
             </div>
@@ -386,9 +457,9 @@ export default function ConsultationInterface({ patient, onComplete, onBack }) {
                 value={consultation.assessment}
                 onChange={(e) => setConsultation(prev => ({ ...prev, assessment: e.target.value }))}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                rows="4"
+                rows={4}
                 placeholder="Clinical impression and reasoning..."
-                maxLength="500"
+                maxLength={500}
               ></textarea>
             </div>
 
@@ -457,9 +528,9 @@ export default function ConsultationInterface({ patient, onComplete, onBack }) {
                 value={consultation.plan}
                 onChange={(e) => setConsultation(prev => ({ ...prev, plan: e.target.value }))}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                rows="4"
+                rows={4}
                 placeholder="Treatment plan and management approach..."
-                maxLength="500"
+                maxLength={500}
               ></textarea>
             </div>
 
@@ -494,9 +565,9 @@ export default function ConsultationInterface({ patient, onComplete, onBack }) {
                   value={consultation.followUp}
                   onChange={(e) => setConsultation(prev => ({ ...prev, followUp: e.target.value }))}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                  rows="3"
+                  rows={3}
                   placeholder="Follow-up appointments, monitoring requirements..."
-                  maxLength="300"
+                  maxLength={300}
                 ></textarea>
               </div>
 

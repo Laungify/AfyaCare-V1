@@ -1,7 +1,20 @@
 
 'use client';
 
-export default function QueueStatus({ patient, onNewRegistration }) {
+type Patient = {
+  id: string | number;
+  name: string;
+  registrationTime: string | number | Date;
+  queuePosition: number;
+  priority: 'Emergency' | 'Urgent' | 'Normal' | string;
+};
+
+type QueueStatusProps = {
+  patient: Patient;
+  onNewRegistration: () => void;
+};
+
+export default function QueueStatus({ patient, onNewRegistration }: QueueStatusProps) {
   return (
     <div className="text-center py-8">
       {/* Success Icon */}

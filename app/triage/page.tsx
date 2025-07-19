@@ -9,9 +9,16 @@ import PatientList from './PatientList';
 
 export default function TriagePage() {
   const [activeTab, setActiveTab] = useState('queue');
-  const [selectedPatient, setSelectedPatient] = useState(null);
+  // Define a Patient type or import it if already defined elsewhere
+  type Patient = {
+    id: string;
+    name: string;
+    // Add other relevant fields as needed
+  };
 
-  const handlePatientSelect = (patient) => {
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+
+  const handlePatientSelect = (patient: Patient) => {
     setSelectedPatient(patient);
     setActiveTab('assessment');
   };

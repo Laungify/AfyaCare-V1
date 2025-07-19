@@ -2,7 +2,24 @@
 'use client';
 import { useState } from 'react';
 
-export default function QueueManagement({ onPatientSelect }) {
+type Patient = {
+  id: string;
+  name: string;
+  age: number;
+  gender: string;
+  priority: string;
+  arrivalTime: string;
+  waitTime: string;
+  reason: string;
+  vitals: { bp: string; temp: string; pulse: string };
+  status: string;
+};
+
+interface QueueManagementProps {
+  onPatientSelect: (patient: Patient) => void;
+}
+
+export default function QueueManagement({ onPatientSelect }: QueueManagementProps) {
   const [selectedPriority, setSelectedPriority] = useState('all');
 
   // Mock patient queue data
@@ -73,7 +90,7 @@ export default function QueueManagement({ onPatientSelect }) {
     ? patients 
     : patients.filter(p => p.priority === selectedPriority);
 
-  const getPriorityColor = (priority) => {
+  const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'Emergency': return 'text-red-600 bg-red-50 border-red-200';
       case 'Urgent': return 'text-orange-600 bg-orange-50 border-orange-200';
@@ -82,7 +99,7 @@ export default function QueueManagement({ onPatientSelect }) {
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'waiting': return 'text-blue-600 bg-blue-50';
       case 'in-progress': return 'text-yellow-600 bg-yellow-50';
